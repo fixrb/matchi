@@ -1,7 +1,6 @@
 # Matchi
 
 [![Build Status](https://travis-ci.org/fixrb/matchi.svg?branch=master)](https://travis-ci.org/fixrb/matchi)
-[![Coverage Status](http://img.shields.io/coveralls/fixrb/matchi.svg?branch=master)](https://coveralls.io/r/fixrb/matchi)
 [![Dependency Status](https://gemnasium.com/fixrb/matchi.svg)](https://gemnasium.com/fixrb/matchi)
 [![Gem Version](http://img.shields.io/gem/v/matchi.svg)](https://rubygems.org/gems/matchi)
 [![Inline docs](http://inch-ci.org/github/fixrb/matchi.svg?branch=master)](http://inch-ci.org/github/fixrb/matchi)
