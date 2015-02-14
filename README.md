@@ -68,6 +68,27 @@ raise_exception = Matchi::RaiseException.new(NameError)
 raise_exception.matches? { Boom } # => true
 ```
 
+**Truth** matcher:
+
+```ruby
+be_true = Matchi::BeTrue.new
+be_true.matches? { true } # => true
+```
+
+**Untruth** matcher:
+
+```ruby
+be_false = Matchi::BeFalse.new
+be_false.matches? { false } # => true
+```
+
+**Nil** matcher:
+
+```ruby
+be_nil = Matchi::BeNil.new
+be_nil.matches? { nil } # => true
+```
+
 ### Custom matchers
 
 Custom matchers can easily be defined for expressing expectations.

@@ -5,6 +5,10 @@ module Matchi
       @expected = expected
     end
 
+    # @example Is it matching /^foo$/ regex?
+    #   match = Matchi::Match.new(/^foo$/)
+    #   match.matches? { 'foo' } # => true
+    #
     # @return [Boolean] Comparison between actual and expected values.
     def matches?
       @expected.match(yield).nil?.equal?(false)
