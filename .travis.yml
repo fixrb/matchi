@@ -5,9 +5,6 @@ script: 'bundle exec rake test:coverage --trace'
 before_install:
   - gem install bundler
 rvm:
-  - ree
-  - 1.8.7
-  - 1.9.2
   - 1.9.3
   - 2.0
   - 2.1
