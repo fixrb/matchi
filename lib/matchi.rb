@@ -7,7 +7,5 @@ require_relative File.join 'matchi', 'be_false'
 require_relative File.join 'matchi', 'be_nil'
 
 # Namespace for the Matchi library.
-#
-# @api private
 module Matchi
 end
