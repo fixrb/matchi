@@ -1,6 +1,7 @@
 module Matchi
   # **Identity** matcher.
   class Equal < BasicObject
+    # @param [#equal?] expected an expected object
     def initialize(expected)
       @expected = expected
     end

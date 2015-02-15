@@ -1,6 +1,7 @@
 module Matchi
   # **Expecting errors** matcher.
   class RaiseException < BasicObject
+    # @param [.exception] expected the class of the expected exception
     def initialize(expected)
       @expected = expected
     end

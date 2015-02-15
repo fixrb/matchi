@@ -1,6 +1,7 @@
 module Matchi
   # **Equivalence** matcher.
   class Eql < BasicObject
+    # @param [#eql?] expected an expected equivalent object
     def initialize(expected)
       @expected = expected
     end

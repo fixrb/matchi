@@ -1,6 +1,7 @@
 module Matchi
   # **Regular expressions** matcher.
   class Match < BasicObject
+    # @param [#match] expected a regular expression
     def initialize(expected)
       @expected = expected
     end
