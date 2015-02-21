@@ -3,5 +3,7 @@ Dir[File.join File.dirname(__FILE__), 'matchi', '*.rb'].each do |fname|
 end
 
 # Namespace for the Matchi library.
+#
+# @api public
 module Matchi
 end
