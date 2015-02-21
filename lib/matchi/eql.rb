@@ -1,6 +1,11 @@
 module Matchi
   # **Equivalence** matcher.
   class Eql < BasicObject
+    # Initialize the matcher with an object.
+    #
+    # @example The string 'foo' matcher
+    #   Matchi::Eql.new('foo')
+    #
     # @param [#eql?] expected an expected equivalent object
     def initialize(expected)
       @expected = expected

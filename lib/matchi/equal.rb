@@ -1,6 +1,11 @@
 module Matchi
   # **Identity** matcher.
   class Equal < BasicObject
+    # Initialize the matcher with an object.
+    #
+    # @example The number 42 matcher
+    #   Matchi::Equal.new(42)
+    #
     # @param [#equal?] expected an expected object
     def initialize(expected)
       @expected = expected

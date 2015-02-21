@@ -1,6 +1,11 @@
 module Matchi
   # **Regular expressions** matcher.
   class Match < BasicObject
+    # Initialize the matcher with an instance of Regexp.
+    #
+    # @example Username matcher
+    #   Matchi::Match.new(/^[a-z0-9_-]{3,16}$/)
+    #
     # @param [#match] expected a regular expression
     def initialize(expected)
       @expected = expected
