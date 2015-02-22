@@ -1,5 +1,5 @@
-require_relative File.join 'support', 'coverage'
-require_relative File.join '..', 'lib', 'matchi', 'raise_exception'
+require_relative File.join '..', 'support', 'coverage'
+require_relative File.join '..', '..', 'lib', 'matchi', 'raise_exception'
 require_relative 'helper'
 
 subject 'raise exception built-in matcher' do
