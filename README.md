@@ -38,54 +38,60 @@ Or install it yourself as:
 
 ## Usage
 
+List all available matchers:
+
+```ruby
+Matchi.constants # => [:BeFalse, :BeNil, :BeTrue, :Eql, :Equal, :Match, :RaiseException]
+```
+
 ### Built-in matchers
 
 **Equivalence** matcher:
 
 ```ruby
-eql = Matchi::Eql.new('foo')
+eql = Matchi.fetch(:Eql, 'foo')
 eql.matches? { 'foo' } # => true
 ```
 
 **Identity** matcher:
 
 ```ruby
-equal = Matchi::Equal.new(:foo)
+equal = Matchi.fetch(:Equal, :foo)
 equal.matches? { :foo } # => true
 ```
 
 **Regular expressions** matcher:
 
 ```ruby
-match = Matchi::Match.new(/^foo$/)
+match = Matchi.fetch(:Match, /^foo$/)
 match.matches? { 'foo' } # => true
 ```
 
 **Expecting errors** matcher:
 
 ```ruby
-raise_exception = Matchi::RaiseException.new(NameError)
+raise_exception = Matchi.fetch(:RaiseException, NameError)
 raise_exception.matches? { Boom } # => true
 ```
 
 **Truth** matcher:
 
 ```ruby
-be_true = Matchi::BeTrue.new
+be_true = Matchi.fetch(:BeTrue)
 be_true.matches? { true } # => true
 ```
 
 **Untruth** matcher:
 
 ```ruby
-be_false = Matchi::BeFalse.new
+be_false = Matchi.fetch(:BeFalse)
 be_false.matches? { false } # => true
 ```
 
 **Nil** matcher:
 
 ```ruby
-be_nil = Matchi::BeNil.new
+be_nil = Matchi.fetch(:BeNil)
 be_nil.matches? { nil } # => true
 ```
 
@@ -104,7 +110,7 @@ module Matchi
   end
 end
 
-be_the_answer = Matchi::BeTheAnswer.new
+be_the_answer = Matchi.fetch(:BeTheAnswer)
 be_the_answer.matches? { 42 } # => true
 ```
 
@@ -121,7 +127,7 @@ module Matchi
   end
 end
 
-be_prime = Matchi::BePrime.new
+be_prime = Matchi.fetch(:BePrime)
 be_prime.matches? { 42 } # => false
 ```
 
@@ -140,7 +146,7 @@ module Matchi
   end
 end
 
-start_with = Matchi::StartWith.new('foo')
+start_with = Matchi.fetch(:StartWith, 'foo')
 start_with.matches? { 'foobar' } # => true
 ```
 
