@@ -38,7 +38,7 @@ Or install it yourself as:
 
 ## Usage
 
-List all available matchers:
+### List all matchers
 
 ```ruby
 Matchi.constants # => [:BeFalse, :BeNil, :BeTrue, :Eql, :Equal, :Match, :RaiseException]
@@ -161,3 +161,7 @@ __Matchi__ follows [Semantic Versioning 2.0](http://semver.org/).
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
+
+## License
+
+See `LICENSE.md` file.
