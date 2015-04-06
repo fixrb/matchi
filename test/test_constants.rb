@@ -6,6 +6,6 @@ module Matchi
   class Foo; end
 end
 
-fail unless Matchi.constants.to_set.superset? %i(
-  BeFalse BeNil BeTrue Eql Equal Foo Match RaiseException
-).to_set
+fail unless Matchi.constants.to_set.superset? [
+  :BeFalse, :BeNil, :BeTrue, :Eql, :Equal, :Match, :RaiseException
+].to_set
