@@ -6,7 +6,7 @@ module Matchi
     # @example The string 'foo' matcher
     #   Matchi::Eql.new('foo')
     #
-    # @param [#eql?] expected an expected equivalent object
+    # @param expected [#eql?] An expected equivalent object.
     def initialize(expected)
       @expected = expected
     end
@@ -14,6 +14,8 @@ module Matchi
     # @example Is it equivalent to 'foo'?
     #   eql = Matchi::Eql.new('foo')
     #   eql.matches? { 'foo' } # => true
+    #
+    # @yieldreturn [#object_id] the actual value to compare to the expected one.
     #
     # @return [Boolean] Comparison between actual and expected values.
     def matches?

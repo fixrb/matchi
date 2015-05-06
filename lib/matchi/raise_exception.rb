@@ -6,7 +6,7 @@ module Matchi
     # @example Divided by 0 matcher
     #   Matchi::RaiseException.new(ZeroDivisionError)
     #
-    # @param [.exception] expected the class of the expected exception
+    # @param expected [.exception] The class of the expected exception.
     def initialize(expected)
       @expected = expected
     end
@@ -14,6 +14,8 @@ module Matchi
     # @example Is it raising NameError?
     #   raise_exception = Matchi::RaiseException.new(NameError)
     #   raise_exception.matches? { Boom } # => true
+    #
+    # @yieldreturn [#object_id] the actual value to compare to the expected one.
     #
     # @return [Boolean] Comparison between actual and expected values.
     def matches?

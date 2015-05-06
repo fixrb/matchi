@@ -6,7 +6,7 @@ module Matchi
     # @example The number 42 matcher
     #   Matchi::Equal.new(42)
     #
-    # @param [#equal?] expected an expected object
+    # @param expected [#equal?] An expected object.
     def initialize(expected)
       @expected = expected
     end
@@ -14,6 +14,8 @@ module Matchi
     # @example Is it equal to :foo?
     #   equal = Matchi::Equal.new(:foo)
     #   equal.matches? { :foo } # => true
+    #
+    # @yieldreturn [#object_id] the actual value to compare to the expected one.
     #
     # @return [Boolean] Comparison between actual and expected values.
     def matches?

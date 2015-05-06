@@ -12,8 +12,8 @@ end
 module Matchi
   # Select a matcher from those available.
   #
-  # @param [Symbol] matcher_id the name of the constant of the matcher to fetch
-  # @param [Array] args parameters to initialize the class of the matcher
+  # @param matcher_id [Symbol] The name of the constant of the matcher to fetch.
+  # @param args       [Array] Parameters to initialize the class of the matcher.
   #
   # @return [#matches?] the matcher
   def self.fetch(matcher_id, *args)
