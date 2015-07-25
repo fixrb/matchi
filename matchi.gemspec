@@ -19,4 +19,10 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'yard',       '~> 0.8'
   spec.add_development_dependency 'simplecov',  '~> 0.10'
   spec.add_development_dependency 'rubocop',    '~> 0.32'
+
+  private_key = File.expand_path '~/.gem/matchi-gem-private_key.pem'
+  if File.exist? private_key
+    spec.signing_key = private_key
+    spec.cert_chain  = ['matchi-gem-public_cert.pem']
+  end
 end
