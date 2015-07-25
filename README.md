@@ -1,10 +1,14 @@
+[gem]: https://rubygems.org/gems/matchi
+[travis]: https://travis-ci.org/fixrb/matchi
+[inchpages]: http://inch-ci.org/github/fixrb/matchi/
+[rubydoc]: http://rubydoc.info/gems/matchi/frames
+
 # Matchi
 
-[![Build Status](https://travis-ci.org/fixrb/matchi.svg?branch=master)](https://travis-ci.org/fixrb/matchi)
-[![Dependency Status](https://gemnasium.com/fixrb/matchi.svg)](https://gemnasium.com/fixrb/matchi)
-[![Gem Version](http://img.shields.io/gem/v/matchi.svg)](https://rubygems.org/gems/matchi)
-[![Inline docs](http://inch-ci.org/github/fixrb/matchi.svg?branch=master)](http://inch-ci.org/github/fixrb/matchi)
-[![Documentation](http://img.shields.io/:yard-docs-38c800.svg)](http://rubydoc.info/gems/matchi/frames)
+[![Build Status](https://travis-ci.org/fixrb/matchi.svg?branch=master)][travis]
+[![Gem Version](https://badge.fury.io/rb/matchi.svg)][gem]
+[![Inline docs](http://inch-ci.org/github/fixrb/matchi.svg?branch=master)][inchpages]
+[![Documentation](http://img.shields.io/:yard-docs-38c800.svg)][rubydoc]
 
 > Collection of expectation matchers for Ruby.
 
