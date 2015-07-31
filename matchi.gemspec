@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = 'matchi'
-  spec.version       = File.read('VERSION.semver')
+  spec.version       = File.read('VERSION.semver').chomp
   spec.authors       = ['Cyril Wack']
   spec.email         = ['contact@cyril.email']
 
@@ -20,9 +20,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'simplecov',  '~> 0.10'
   spec.add_development_dependency 'rubocop',    '~> 0.32'
 
-  private_key = File.expand_path '~/.gem/matchi-gem-private_key.pem'
-  if File.exist? private_key
-    spec.signing_key = private_key
-    spec.cert_chain  = ['matchi-gem-public_cert.pem']
-  end
+  spec.cert_chain   = ['certs/gem-fixrb-public_cert.pem']
+  private_key       = File.expand_path('~/.ssh/gem-fixrb-private_key.pem')
+  spec.signing_key  = private_key if File.exist?(private_key)
 end

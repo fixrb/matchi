@@ -1,8 +1,3 @@
-[gem]: https://rubygems.org/gems/matchi
-[travis]: https://travis-ci.org/fixrb/matchi
-[inchpages]: http://inch-ci.org/github/fixrb/matchi/
-[rubydoc]: http://rubydoc.info/gems/matchi/frames
-
 # Matchi
 
 [![Build Status](https://travis-ci.org/fixrb/matchi.svg?branch=master)][travis]
@@ -26,19 +21,16 @@
 
 ## Installation
 
-Add this line to your application's Gemfile:
+__Matchi__ is cryptographically signed.
 
-```ruby
-gem 'matchi'
-```
+To be sure the gem you install hasn't been tampered with, add my public key
+(if you haven't already) as a trusted certificate:
 
-And then execute:
+    $ gem cert --add <(curl -Ls https://raw.github.com/fixrb/matchi/master/certs/gem-fixrb-public_cert.pem)
+    $ gem install matchi -P HighSecurity
 
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install matchi
+The `HighSecurity` trust profile will verify all gems.  All of __Matchi__'s
+dependencies are signed.
 
 ## Usage
 
@@ -154,6 +146,19 @@ start_with = Matchi.fetch(:StartWith, 'foo')
 start_with.matches? { 'foobar' } # => true
 ```
 
+## Security
+
+As a basic form of security __Matchi__ provides a set of SHA512 checksums for
+every Gem release.  These checksums can be found in the `checksum/` directory.
+Although these checksums do not prevent malicious users from tampering with a
+built Gem they can be used for basic integrity verification purposes.
+
+The checksum of a file can be checked using the `sha512sum` command.  For
+example:
+
+    $ sha512sum pkg/matchi-0.0.1.gem
+    548d9f669ded4e622182791a5390aaceae0bf2e557b0864f05a842b0be2c65e10e1fb8499f49a3b9efd0e8eaeb691351b1c670d6316ce49965a99683b1071389  pkg/matchi-0.0.1.gem
+
 ## Versioning
 
 __Matchi__ follows [Semantic Versioning 2.0](http://semver.org/).
@@ -169,3 +174,8 @@ __Matchi__ follows [Semantic Versioning 2.0](http://semver.org/).
 ## License
 
 See `LICENSE.md` file.
+
+[gem]: https://rubygems.org/gems/matchi
+[travis]: https://travis-ci.org/fixrb/matchi
+[inchpages]: http://inch-ci.org/github/fixrb/matchi/
+[rubydoc]: http://rubydoc.info/gems/matchi/frames
