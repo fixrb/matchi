@@ -32,6 +32,16 @@ To be sure the gem you install hasn't been tampered with, add my public key
 The `HighSecurity` trust profile will verify all gems.  All of __Matchi__'s
 dependencies are signed.
 
+Or add this line to your application's Gemfile:
+
+```ruby
+gem 'matchi'
+```
+
+And then execute:
+
+    $ bundle
+
 ## Usage
 
 ### List all matchers
