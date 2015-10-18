@@ -7,5 +7,5 @@ module Matchi
 end
 
 fail unless Matchi.constants.to_set.superset? [
-  :BeFalse, :BeNil, :BeTrue, :Eql, :Equal, :Match, :RaiseException
+  :BeFalse, :BeNil, :BeTrue, :Eql, :Equal, :Match, :RaiseException, :Foo
 ].to_set
