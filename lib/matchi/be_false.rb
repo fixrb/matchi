@@ -1,6 +1,6 @@
 module Matchi
   # **Untruth** matcher.
-  class BeFalse
+  class BeFalse < BasicObject
     # Boolean comparison between the actual value and the expected value.
     #
     # @example Is it false?
