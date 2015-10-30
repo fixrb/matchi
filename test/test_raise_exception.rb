@@ -1,15 +1,23 @@
 require_relative File.join 'support', 'coverage'
 require_relative File.join '..', 'lib', 'matchi'
 
+matcher = Matchi::RaiseException.new(ZeroDivisionError)
+
 # It is expected to be true
-fail unless Matchi.fetch(:RaiseException, ZeroDivisionError).matches? { 0 / 0 }
+fail unless matcher.matches? { 0 / 0 }
 
 # It is expected to be false
-fail if Matchi.fetch(:RaiseException, ZeroDivisionError).matches? { 'bar' }
+fail if matcher.matches? { 'bar' }
 
 # It is expected to raise
 begin
-  Matchi.fetch(:RaiseException, ZeroDivisionError).matches? { BOOM }
+  matcher.matches? { BOOM }
 rescue NameError
   true
 end
+
+# It returns this string
+fail unless matcher.to_s == 'raise_exception ZeroDivisionError'
+
+# It returns this hash
+fail unless matcher.to_h == { RaiseException: [ZeroDivisionError] }

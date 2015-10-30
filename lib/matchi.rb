@@ -1,22 +1,7 @@
-Dir[File.join File.dirname(__FILE__), 'matchi', '*.rb'].each do |fname|
-  require_relative fname
+# Namespace for the Matchi library.
+module Matchi
 end
 
-# Namespace for the Matchi library.
-#
-# @api public
-#
-# @example Match that 42 is equal to 42
-#   matcher = Matchi.fetch(:Equal, 42)
-#   matcher.matches? { 42 } # => true
-module Matchi
-  # Select a matcher from those available.
-  #
-  # @param matcher_id [Symbol] The name of the constant of the matcher to fetch.
-  # @param args       [Array] Parameters to initialize the class of the matcher.
-  #
-  # @return [#matches?] the matcher
-  def self.fetch(matcher_id, *args)
-    const_get(matcher_id, false).new(*args)
-  end
+Dir[File.join File.dirname(__FILE__), 'matchi', '*.rb'].each do |fname|
+  require_relative fname
 end
