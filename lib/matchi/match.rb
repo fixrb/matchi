@@ -1,6 +1,6 @@
 module Matchi
   # **Regular expressions** matcher.
-  class Match < BasicObject
+  class Match
     # Initialize the matcher with an instance of Regexp.
     #
     # @example Username matcher.

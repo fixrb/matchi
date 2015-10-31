@@ -1,6 +1,6 @@
 module Matchi
   # **Expecting errors** matcher.
-  class RaiseException < BasicObject
+  class RaiseException
     # Initialize the matcher with a descendant of class Exception.
     #
     # @example Divided by 0 matcher.

@@ -1,6 +1,6 @@
 module Matchi
   # **Identity** matcher.
-  class Equal < BasicObject
+  class Equal
     # Initialize the matcher with an object.
     #
     # @example The number 42 matcher.

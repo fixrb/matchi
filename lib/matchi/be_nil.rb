@@ -1,6 +1,6 @@
 module Matchi
   # **Nil** matcher.
-  class BeNil < BasicObject
+  class BeNil
     # Boolean comparison between the actual value and the expected value.
     #
     # @example Is it nil?

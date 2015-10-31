@@ -1,6 +1,6 @@
 module Matchi
   # **Equivalence** matcher.
-  class Eql < BasicObject
+  class Eql
     # Initialize the matcher with an object.
     #
     # @example The string 'foo' matcher.
