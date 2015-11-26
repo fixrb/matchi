@@ -49,49 +49,49 @@ And then execute:
 **Equivalence** matcher:
 
 ```ruby
-eql = Matchi::Eql.new('foo')
+eql = Matchi::Matchers::Eql::Matcher.new('foo')
 eql.matches? { 'foo' } # => true
 ```
 
 **Identity** matcher:
 
 ```ruby
-equal = Matchi::Equal.new(:foo)
+equal = Matchi::Matchers::Equal::Matcher.new(:foo)
 equal.matches? { :foo } # => true
 ```
 
 **Regular expressions** matcher:
 
 ```ruby
-match = Matchi::Match.new(/^foo$/)
+match = Matchi::Matchers::Match::Matcher.new(/^foo$/)
 match.matches? { 'foo' } # => true
 ```
 
 **Expecting errors** matcher:
 
 ```ruby
-raise_exception = Matchi::RaiseException.new(NameError)
+raise_exception = Matchi::Matchers::RaiseException::Matcher.new(NameError)
 raise_exception.matches? { Boom } # => true
 ```
 
 **Truth** matcher:
 
 ```ruby
-be_true = Matchi::BeTrue.new
+be_true = Matchi::Matchers::BeTrue::Matcher.new
 be_true.matches? { true } # => true
 ```
 
 **Untruth** matcher:
 
 ```ruby
-be_false = Matchi::BeFalse.new
+be_false = Matchi::Matchers::BeFalse::Matcher.new
 be_false.matches? { false } # => true
 ```
 
 **Nil** matcher:
 
 ```ruby
-be_nil = Matchi::BeNil.new
+be_nil = Matchi::Matchers::BeNil::Matcher.new
 be_nil.matches? { nil } # => true
 ```
 
@@ -99,78 +99,90 @@ be_nil.matches? { nil } # => true
 
 Custom matchers can easily be defined for expressing expectations.  They can be any Ruby class that responds to `matches?`, `to_s` and `to_h` instance methods.
 
-**Be the answer** matcher:
+A **Be the answer** matcher:
 
 ```ruby
 module Matchi
-  class BeTheAnswer
-    def matches?
-      42.equal? yield
-    end
+  module Matchers
+    module BeTheAnswer
+      class Matcher
+        def matches?
+          42.equal? yield
+        end
 
-    def to_s
-      'be_the_answer'
-    end
+        def to_s
+          'be_the_answer'
+        end
 
-    def to_h
-      { BeTheAnswer: [] }
+        def to_h
+          { BeTheAnswer: [] }
+        end
+      end
     end
   end
 end
 
-be_the_answer = Matchi::BeTheAnswer.new
+be_the_answer = Matchi::Matchers::BeTheAnswer::Matcher.new
 be_the_answer.matches? { 42 } # => true
 ```
 
-**Be prime** matcher:
+A **Be prime** matcher:
 
 ```ruby
 require 'prime'
 
 module Matchi
-  class BePrime
-    def matches?
-      Prime.prime? yield
-    end
+  module Matchers
+    module BePrime
+      class Matcher
+        def matches?
+          Prime.prime? yield
+        end
 
-    def to_s
-      'be_prime'
-    end
+        def to_s
+          'be_prime'
+        end
 
-    def to_h
-      { BePrime: [] }
+        def to_h
+          { BePrime: [] }
+        end
+      end
     end
   end
 end
 
-be_prime = Matchi::BePrime.new
+be_prime = Matchi::Matchers::BePrime::Matcher.new
 be_prime.matches? { 42 } # => false
 ```
 
-**Start with** matcher:
+A **Start with** matcher:
 
 ```ruby
 module Matchi
-  class StartWith
-    def initialize(expected)
-      @expected = expected
-    end
+  module Matchers
+    module StartWith
+      class Matcher
+        def initialize(expected)
+          @expected = expected
+        end
 
-    def matches?
-      !Regexp.new("^#{@expected}").match(yield).nil?
-    end
+        def matches?
+          !Regexp.new("^#{@expected}").match(yield).nil?
+        end
 
-    def to_s
-      'start_with'
-    end
+        def to_s
+          'start_with'
+        end
 
-    def to_h
-      { StartWith: [@expected] }
+        def to_h
+          { StartWith: [@expected] }
+        end
+      end
     end
   end
 end
 
-start_with = Matchi::StartWith.new('foo')
+start_with = Matchi::Matchers::StartWith::Matcher.new('foo')
 start_with.matches? { 'foobar' } # => true
 ```
 

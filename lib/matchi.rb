@@ -2,6 +2,4 @@
 module Matchi
 end
 
-Dir[File.join File.dirname(__FILE__), 'matchi', '*.rb'].each do |fname|
-  require_relative fname
-end
+require_relative File.join('matchi', 'matchers')

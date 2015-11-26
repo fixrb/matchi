@@ -18,7 +18,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake',       '~> 10.4'
   spec.add_development_dependency 'yard',       '~> 0.8'
   spec.add_development_dependency 'simplecov',  '~> 0.10'
-  spec.add_development_dependency 'rubocop',    '~> 0.34'
+  spec.add_development_dependency 'rubocop',    '~> 0.35'
+  spec.add_development_dependency 'byebug'
 
   spec.cert_chain   = ['certs/gem-fixrb-public_cert.pem']
   private_key       = File.expand_path('~/.ssh/gem-fixrb-private_key.pem')

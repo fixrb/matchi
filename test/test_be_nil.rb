@@ -1,7 +1,7 @@
 require_relative File.join 'support', 'coverage'
-require_relative File.join '..', 'lib', 'matchi'
+require_relative File.join '..', 'lib', 'matchi', 'matchers', 'be_nil'
 
-matcher = Matchi::BeNil.new
+matcher = Matchi::Matchers::BeNil::Matcher.new
 
 # It is expected to be true
 fail unless matcher.matches? { nil }
