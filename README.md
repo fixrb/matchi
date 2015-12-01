@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/fixrb/matchi.svg?branch=master)][travis]
 [![Code Climate](https://codeclimate.com/github/fixrb/matchi/badges/gpa.svg)][codeclimate]
+[![Dependency Status](https://gemnasium.com/fixrb/matchi.svg)][gemnasium]
 [![Gem Version](https://badge.fury.io/rb/matchi.svg)][gem]
 [![Inline docs](http://inch-ci.org/github/fixrb/matchi.svg?branch=master)][inchpages]
 [![Documentation](http://img.shields.io/:yard-docs-38c800.svg)][rubydoc]
@@ -219,6 +220,7 @@ See `LICENSE.md` file.
 [gem]: https://rubygems.org/gems/matchi
 [travis]: https://travis-ci.org/fixrb/matchi
 [codeclimate]: https://codeclimate.com/github/fixrb/matchi
+[gemnasium]: https://gemnasium.com/fixrb/matchi
 [inchpages]: http://inch-ci.org/github/fixrb/matchi
 [rubydoc]: http://rubydoc.info/gems/matchi/frames
 
