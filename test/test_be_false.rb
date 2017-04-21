@@ -4,13 +4,13 @@ require_relative File.join '..', 'lib', 'matchi', 'matchers', 'be_false'
 matcher = Matchi::Matchers::BeFalse::Matcher.new
 
 # It is expected to be true
-fail unless matcher.matches? { false }
+raise unless matcher.matches? { false }
 
 # It is expected to be false
-fail if matcher.matches? { 'foo' }
+raise if matcher.matches? { 'foo' }
 
 # It returns this string
-fail unless matcher.to_s == 'be_false'
+raise unless matcher.to_s == 'be_false'
 
 # It returns this hash
-fail unless matcher.to_h == { BeFalse: [] }
+raise unless matcher.to_h == { BeFalse: [] }

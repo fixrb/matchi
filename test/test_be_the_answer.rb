@@ -51,13 +51,13 @@ end
 matcher = Matchi::Matchers::BeTheAnswer::Matcher.new
 
 # It is expected to be true
-fail unless matcher.matches? { 42 }
+raise unless matcher.matches? { 42 }
 
 # It is expected to be false
-fail if matcher.matches? { 4 }
+raise if matcher.matches? { 4 }
 
 # It returns this string
-fail unless matcher.to_s == 'be_the_answer'
+raise unless matcher.to_s == 'be_the_answer'
 
 # It returns this hash
-fail unless matcher.to_h == { BeTheAnswer: [] }
+raise unless matcher.to_h == { BeTheAnswer: [] }

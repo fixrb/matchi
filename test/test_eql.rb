@@ -4,13 +4,13 @@ require_relative File.join '..', 'lib', 'matchi', 'matchers', 'eql'
 matcher = Matchi::Matchers::Eql::Matcher.new('foo')
 
 # It is expected to be true
-fail unless matcher.matches? { 'foo' }
+raise unless matcher.matches? { 'foo' }
 
 # It is expected to be false
-fail if matcher.matches? { 'bar' }
+raise if matcher.matches? { 'bar' }
 
 # It returns this string
-fail unless matcher.to_s == 'eql "foo"'
+raise unless matcher.to_s == 'eql "foo"'
 
 # It returns this hash
-fail unless matcher.to_h == { Eql: ['foo'] }
+raise unless matcher.to_h == { Eql: ['foo'] }

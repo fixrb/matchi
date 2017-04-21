@@ -4,10 +4,10 @@ require_relative File.join '..', 'lib', 'matchi', 'matchers', 'raise_exception'
 matcher = Matchi::Matchers::RaiseException::Matcher.new(ZeroDivisionError)
 
 # It is expected to be true
-fail unless matcher.matches? { 0 / 0 }
+raise unless matcher.matches? { 0 / 0 }
 
 # It is expected to be false
-fail if matcher.matches? { 'bar' }
+raise if matcher.matches? { 'bar' }
 
 # It is expected to raise
 begin
@@ -17,7 +17,7 @@ rescue NameError
 end
 
 # It returns this string
-fail unless matcher.to_s == 'raise_exception ZeroDivisionError'
+raise unless matcher.to_s == 'raise_exception ZeroDivisionError'
 
 # It returns this hash
-fail unless matcher.to_h == { RaiseException: [ZeroDivisionError] }
+raise unless matcher.to_h == { RaiseException: [ZeroDivisionError] }

@@ -17,7 +17,7 @@ matcher = Matchi::Matchers::Foo::Matcher.new
 
 # It is expected to raise NotImplementedError
 begin
-  matcher.matches? { 42 } && fail
+  matcher.matches? { 42 } && raise
 rescue NotImplementedError => e
   e
 end

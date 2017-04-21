@@ -5,7 +5,7 @@ module Matchi
     #
     # @raise [NotImplementedError] Override me inside a Matcher subclass please.
     def matches?
-      fail NotImplementedError, 'The matcher MUST respond to matches? method.'
+      raise NotImplementedError, 'The matcher MUST respond to matches? method.'
     end
 
     # Returns a string representing the matcher.

@@ -4,13 +4,13 @@ require_relative File.join '..', 'lib', 'matchi', 'matchers', 'match'
 matcher = Matchi::Matchers::Match::Matcher.new(/^foo/)
 
 # It is expected to be true
-fail unless matcher.matches? { 'foobar' }
+raise unless matcher.matches? { 'foobar' }
 
 # It is expected to be false
-fail if matcher.matches? { 'bar' }
+raise if matcher.matches? { 'bar' }
 
 # It returns this string
-fail unless matcher.to_s == 'match /^foo/'
+raise unless matcher.to_s == 'match /^foo/'
 
 # It returns this hash
-fail unless matcher.to_h == { Match: [/^foo/] }
+raise unless matcher.to_h == { Match: [/^foo/] }
