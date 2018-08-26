@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Matchi
   # Common matcher methods.
   module MatchersBase
