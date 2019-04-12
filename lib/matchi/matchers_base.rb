@@ -44,8 +44,8 @@ module Matchi
       self
         .class
         .name
-        .gsub(/^Matchi::Matchers::/, '')
-        .gsub(/::Matcher$/, '')
+        .gsub(/\AMatchi::Matchers::/, '')
+        .gsub(/::Matcher\z/, '')
     end
   end
 end
