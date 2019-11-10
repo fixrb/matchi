@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative File.join('..', 'matchers_base') unless
+require_relative ::File.join('..', 'matchers_base') unless
   defined?(::Matchi::MatchersBase)
 
 module Matchi

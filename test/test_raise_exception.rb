@@ -13,7 +13,7 @@ raise if matcher.matches? { 'bar' }
 
 # It is expected to raise
 begin
-  matcher.matches? { BOOM }
+  matcher.matches? { Matchi::BOOM }
 rescue NameError
   true
 end

@@ -1,10 +1,10 @@
 # Matchi
 
-[![Build Status](https://travis-ci.org/fixrb/matchi.svg?branch=master)][travis]
+[![Build Status](https://api.travis-ci.org/fixrb/matchi.svg?branch=master)][travis]
 [![Code Climate](https://codeclimate.com/github/fixrb/matchi/badges/gpa.svg)][codeclimate]
 [![Gem Version](https://badge.fury.io/rb/matchi.svg)][gem]
-[![Inline docs](http://inch-ci.org/github/fixrb/matchi.svg?branch=master)][inchpages]
-[![Documentation](http://img.shields.io/:yard-docs-38c800.svg)][rubydoc]
+[![Inline docs](https://inch-ci.org/github/fixrb/matchi.svg?branch=master)][inchpages]
+[![Documentation](https://img.shields.io/:yard-docs-38c800.svg)][rubydoc]
 
 > Collection of expectation matchers for Ruby.
 
@@ -12,13 +12,12 @@
 
 * Home page: https://github.com/fixrb/matchi
 * Bugs/issues: https://github.com/fixrb/matchi/issues
-* Support: https://stackoverflow.com/questions/tagged/matchi
 
 ## Rubies
 
 * [MRI](https://www.ruby-lang.org/)
-* [Rubinius](http://rubini.us/)
-* [JRuby](http://jruby.org/)
+* [Rubinius](https://rubinius.com/)
+* [JRuby](https://www.jruby.org/)
 
 ## Installation
 
@@ -195,7 +194,7 @@ example:
 
 ## Versioning
 
-__Matchi__ follows [Semantic Versioning 2.0](http://semver.org/).
+__Matchi__ follows [Semantic Versioning 2.0](https://semver.org/).
 
 ## Contributing
 
@@ -212,12 +211,11 @@ See `LICENSE.md` file.
 [gem]: https://rubygems.org/gems/matchi
 [travis]: https://travis-ci.org/fixrb/matchi
 [codeclimate]: https://codeclimate.com/github/fixrb/matchi
-[gemnasium]: https://gemnasium.com/fixrb/matchi
-[inchpages]: http://inch-ci.org/github/fixrb/matchi
-[rubydoc]: http://rubydoc.info/gems/matchi/frames
+[inchpages]: https://inch-ci.org/github/fixrb/matchi
+[rubydoc]: https://rubydoc.info/gems/matchi/frames
 
 ***
 
 This project is sponsored by:
 
-[![Sashite](https://sashite.com/img/sashite.png)](https://sashite.com/)
+[![Sashite](https://pbs.twimg.com/profile_images/618485028322975744/PZ9qPuI__400x400.png)](https://sashite.com/)
