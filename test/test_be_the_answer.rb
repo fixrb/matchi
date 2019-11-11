@@ -15,7 +15,7 @@ module Matchi
         #   be_the_answer = Matchi::Matchers::BeTheAnswer.new
         #   be_the_answer.matches? { 42 } # => true
         #
-        # @yieldreturn [#object_id] the actual value to compare to the expected
+        # @yieldreturn [#object_id] The actual value to compare to the expected
         #   one.
         #
         # @return [Boolean] Comparison between actual and expected values.

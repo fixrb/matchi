@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative ::File.join('..', 'matchers_base') unless
+require_relative File.join('..', 'matchers_base') unless
   defined?(::Matchi::MatchersBase)
 
 module Matchi
@@ -27,11 +27,11 @@ module Matchi
         #   match = Matchi::Matchers::Match::Matcher.new(/^foo$/)
         #   match.matches? { 'foo' } # => true
         #
-        # @yieldreturn [#object_id] the actual value to compare to the expected
+        # @yieldreturn [#object_id] The actual value to compare to the expected
         #   one.
         #
         # @return [Boolean] Comparison between actual and expected values.
-        def matches?
+        def matches?(**)
           @expected.match(yield).nil?.equal?(false)
         end
       end

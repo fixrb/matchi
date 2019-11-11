@@ -14,6 +14,7 @@ raise if matcher.matches? { 'bar' }
 # It is expected to raise
 begin
   matcher.matches? { Matchi::BOOM }
+  raise
 rescue NameError
   true
 end

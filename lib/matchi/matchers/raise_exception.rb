@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative ::File.join('..', 'matchers_base') unless
+require_relative File.join('..', 'matchers_base') unless
   defined?(::Matchi::MatchersBase)
 
 module Matchi
@@ -27,13 +27,17 @@ module Matchi
         #   matcher = Matchi::Matchers::RaiseException::Matcher.new(NameError)
         #   matcher.matches? { Boom } # => true
         #
-        # @yieldreturn [#object_id] the actual value to compare to the expected
+        # @param context [#actual] An object responding to #actual method, if
+        #   order to keep the raised exception.
+        #
+        # @yieldreturn [#object_id] The actual value to compare to the expected
         #   one.
         #
         # @return [Boolean] Comparison between actual and expected values.
-        def matches?
+        def matches?(context: nil)
           yield
-        rescue @expected
+        rescue @expected => e
+          context.actual = e if context.respond_to?(:actual=)
           true
         else
           false
