@@ -27,17 +27,13 @@ module Matchi
         #   matcher = Matchi::Matchers::RaiseException::Matcher.new(NameError)
         #   matcher.matches? { Boom } # => true
         #
-        # @param context [#actual] An object responding to #actual method, if
-        #   order to keep the raised exception.
-        #
         # @yieldreturn [#object_id] The actual value to compare to the expected
         #   one.
         #
         # @return [Boolean] Comparison between actual and expected values.
-        def matches?(context: nil)
+        def matches?(*, **)
           yield
-        rescue @expected => e
-          context.actual = e if context.respond_to?(:actual=)
+        rescue @expected => _e
           true
         else
           false

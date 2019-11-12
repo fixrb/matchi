@@ -31,7 +31,7 @@ module Matchi
         #   one.
         #
         # @return [Boolean] Comparison between actual and expected values.
-        def matches?(**)
+        def matches?(*, **)
           @expected.equal?(yield)
         end
       end
