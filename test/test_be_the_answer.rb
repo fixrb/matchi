@@ -34,6 +34,15 @@ module Matchi
           'be_the_answer'
         end
 
+        # A string containing a human-readable representation of the matcher.
+        #
+        # @api public
+        #
+        # @return [String] The human-readable representation of the matcher.
+        def inspect
+          'BeTheAnswer()'
+        end
+
         # Returns a hash of one key-value pair with a key corresponding to the
         #   matcher and a value corresponding to its initialize parameters.
         #
@@ -60,6 +69,9 @@ raise if matcher.matches? { 4 }
 
 # It returns this string
 raise unless matcher.to_s == 'be_the_answer'
+
+# It returns this representation
+raise unless matcher.inspect == 'BeTheAnswer()'
 
 # It returns this hash
 raise unless matcher.to_h == { BeTheAnswer: [] }

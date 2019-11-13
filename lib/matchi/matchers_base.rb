@@ -26,6 +26,17 @@ module Matchi
       defined?(@expected) ? [s, @expected.inspect].join(' ') : s
     end
 
+    # A string containing a human-readable representation of the matcher.
+    #
+    # @api public
+    #
+    # @return [String] The human-readable representation of the matcher.
+    def inspect
+      expected_inspect = @expected.inspect if defined?(@expected)
+
+      "#{matcher_name}(#{expected_inspect})"
+    end
+
     # Returns a hash of one key-value pair with a key corresponding to the
     #   matcher and a value corresponding to its initialize parameters.
     #

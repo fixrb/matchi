@@ -14,5 +14,8 @@ raise if matcher.matches? { :bar }
 # It returns this string
 raise unless matcher.to_s == 'equal :foo'
 
+# It returns this representation
+raise unless matcher.inspect == 'Equal(:foo)'
+
 # It returns this hash
 raise unless matcher.to_h == { Equal: [:foo] }

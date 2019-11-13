@@ -14,5 +14,8 @@ raise if matcher.matches? { 'foo' }
 # It returns this string
 raise unless matcher.to_s == 'be_nil'
 
+# It returns this representation
+raise unless matcher.inspect == 'BeNil()'
+
 # It returns this hash
 raise unless matcher.to_h == { BeNil: [] }

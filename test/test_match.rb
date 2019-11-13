@@ -14,5 +14,8 @@ raise if matcher.matches? { 'bar' }
 # It returns this string
 raise unless matcher.to_s == 'match /^foo/'
 
+# It returns this representation
+raise unless matcher.inspect == 'Match(/^foo/)'
+
 # It returns this hash
 raise unless matcher.to_h == { Match: [/^foo/] }

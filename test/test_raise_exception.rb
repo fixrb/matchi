@@ -22,5 +22,8 @@ end
 # It returns this string
 raise unless matcher.to_s == 'raise_exception ZeroDivisionError'
 
+# It returns this representation
+raise unless matcher.inspect == 'RaiseException(ZeroDivisionError)'
+
 # It returns this hash
 raise unless matcher.to_h == { RaiseException: [ZeroDivisionError] }
