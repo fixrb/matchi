@@ -4,4 +4,4 @@
 module Matchi
 end
 
-require_relative File.join('matchi', 'helper')
+require_relative File.join('matchi', 'matcher')
