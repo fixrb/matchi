@@ -42,49 +42,49 @@ Or install it yourself as:
 **Equivalence** matcher:
 
 ```ruby
-eql = Matchi::Matchers::Eql::Matcher.new('foo')
+eql = Matchi::Matcher::Eql.new('foo')
 eql.matches? { 'foo' } # => true
 ```
 
 **Identity** matcher:
 
 ```ruby
-equal = Matchi::Matchers::Equal::Matcher.new(:foo)
+equal = Matchi::Matcher::Equal.new(:foo)
 equal.matches? { :foo } # => true
 ```
 
 **Regular expressions** matcher:
 
 ```ruby
-match = Matchi::Matchers::Match::Matcher.new(/^foo$/)
+match = Matchi::Matcher::Match.new(/^foo$/)
 match.matches? { 'foo' } # => true
 ```
 
 **Expecting errors** matcher:
 
 ```ruby
-raise_exception = Matchi::Matchers::RaiseException::Matcher.new(NameError)
+raise_exception = Matchi::Matcher::RaiseException.new(NameError)
 raise_exception.matches? { Boom } # => true
 ```
 
 **Truth** matcher:
 
 ```ruby
-be_true = Matchi::Matchers::BeTrue::Matcher.new
+be_true = Matchi::Matcher::BeTrue.new
 be_true.matches? { true } # => true
 ```
 
 **Untruth** matcher:
 
 ```ruby
-be_false = Matchi::Matchers::BeFalse::Matcher.new
+be_false = Matchi::Matcher::BeFalse.new
 be_false.matches? { false } # => true
 ```
 
 **Nil** matcher:
 
 ```ruby
-be_nil = Matchi::Matchers::BeNil::Matcher.new
+be_nil = Matchi::Matcher::BeNil.new
 be_nil.matches? { nil } # => true
 ```
 
@@ -96,26 +96,16 @@ A **Be the answer** matcher:
 
 ```ruby
 module Matchi
-  module Matchers
-    module BeTheAnswer
-      class Matcher
-        def matches?
-          42.equal? yield
-        end
-
-        def to_s
-          'be_the_answer'
-        end
-
-        def to_h
-          { BeTheAnswer: [] }
-        end
+  module Matcher
+    class BeTheAnswer < ::Matchi::Matcher::Base
+      def matches?
+        42.equal? yield
       end
     end
   end
 end
 
-be_the_answer = Matchi::Matchers::BeTheAnswer::Matcher.new
+be_the_answer = Matchi::Matcher::BeTheAnswer.new
 be_the_answer.matches? { 42 } # => true
 ```
 
@@ -125,26 +115,16 @@ A **Be prime** matcher:
 require 'prime'
 
 module Matchi
-  module Matchers
-    module BePrime
-      class Matcher
-        def matches?
-          Prime.prime? yield
-        end
-
-        def to_s
-          'be_prime'
-        end
-
-        def to_h
-          { BePrime: [] }
-        end
+  module Matcher
+    class BePrime < ::Matchi::Matcher::Base
+      def matches?
+        Prime.prime? yield
       end
     end
   end
 end
 
-be_prime = Matchi::Matchers::BePrime::Matcher.new
+be_prime = Matchi::Matcher::BePrime.new
 be_prime.matches? { 42 } # => false
 ```
 
@@ -152,30 +132,20 @@ A **Start with** matcher:
 
 ```ruby
 module Matchi
-  module Matchers
-    module StartWith
-      class Matcher
-        def initialize(expected)
-          @expected = expected
-        end
+  module Matcher
+    class StartWith < ::Matchi::Matcher::Base
+      def initialize(expected)
+        @expected = expected
+      end
 
-        def matches?
-          !Regexp.new("^#{@expected}").match(yield).nil?
-        end
-
-        def to_s
-          'start_with'
-        end
-
-        def to_h
-          { StartWith: [@expected] }
-        end
+      def matches?
+        !Regexp.new("^#{expected}").match(yield).nil?
       end
     end
   end
 end
 
-start_with = Matchi::Matchers::StartWith::Matcher.new('foo')
+start_with = Matchi::Matcher::StartWith.new('foo')
 start_with.matches? { 'foobar' } # => true
 ```
 
@@ -216,6 +186,9 @@ See `LICENSE.md` file.
 
 ***
 
-This project is sponsored by:
-
-[![Sashite](https://pbs.twimg.com/profile_images/618485028322975744/PZ9qPuI__400x400.png)](https://sashite.com/)
+<p>
+  This project is sponsored by:<br />
+  <a href="https://sashite.com/"><img
+    src="https://github.com/fixrb/defi/raw/bdf560d73e7ff2306f6f4a071ced36b383cbf35d/img/sashite.png"
+    alt="Sashite" /></a>
+</p>
