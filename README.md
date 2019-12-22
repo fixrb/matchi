@@ -186,6 +186,9 @@ See `LICENSE.md` file.
 
 ***
 
-This project is sponsored by:
-
-[![Sashite](https://pbs.twimg.com/profile_images/618485028322975744/PZ9qPuI__400x400.png)](https://sashite.com/)
+<p>
+  This project is sponsored by:<br />
+  <a href="https://sashite.com/"><img
+    src="https://github.com/fixrb/defi/raw/bdf560d73e7ff2306f6f4a071ced36b383cbf35d/img/sashite.png"
+    alt="Sashite" /></a>
+</p>
