@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'matcher'
+require_relative "matcher"
 
 module Matchi
   # Collection of helper methods.

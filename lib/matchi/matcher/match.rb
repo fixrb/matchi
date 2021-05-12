@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'base'
+require_relative "base"
 
 module Matchi
   module Matcher
@@ -13,6 +13,7 @@ module Matchi
       #
       # @param expected [#match] A regular expression.
       def initialize(expected)
+        super()
         @expected = expected
       end
 

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'base'
+require_relative "base"
 
 module Matchi
   module Matcher
@@ -13,6 +13,7 @@ module Matchi
       #
       # @param expected [Exception] The class of the expected exception.
       def initialize(expected)
+        super()
         @expected = expected
       end
 

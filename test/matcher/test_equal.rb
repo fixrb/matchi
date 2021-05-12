@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative File.join('..', 'support', 'coverage')
-require_relative File.join('..', '..', 'lib', 'matchi', 'matcher', 'equal')
+require_relative File.join("..", "support", "coverage")
+require_relative File.join("..", "..", "lib", "matchi", "matcher", "equal")
 
 expected = :foo
 matcher = Matchi::Matcher::Equal.new(expected)
@@ -16,10 +16,10 @@ raise unless matcher.matches? { :foo }
 raise if matcher.matches? { :bar }
 
 # It returns this string
-raise unless matcher.to_s == 'equal :foo'
+raise unless matcher.to_s == "equal :foo"
 
 # It returns this representation
-raise unless matcher.inspect == 'Matchi::Matcher::Equal(:foo)'
+raise unless matcher.inspect == "Matchi::Matcher::Equal(:foo)"
 
 # It returns an expected given value
 raise unless matcher.expected == expected

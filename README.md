@@ -1,9 +1,9 @@
 # Matchi
 
-[![Build Status](https://api.travis-ci.org/fixrb/matchi.svg?branch=master)][travis]
+[![Build Status](https://api.travis-ci.org/fixrb/matchi.svg?branch=main)][travis]
 [![Code Climate](https://codeclimate.com/github/fixrb/matchi/badges/gpa.svg)][codeclimate]
 [![Gem Version](https://badge.fury.io/rb/matchi.svg)][gem]
-[![Inline docs](https://inch-ci.org/github/fixrb/matchi.svg?branch=master)][inchpages]
+[![Inline docs](https://inch-ci.org/github/fixrb/matchi.svg?branch=main)][inchpages]
 [![Documentation](https://img.shields.io/:yard-docs-38c800.svg)][rubydoc]
 
 > Collection of expectation matchers for Ruby.
@@ -13,7 +13,7 @@
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'matchi'
+gem "matchi"
 ```
 
 And then execute:
@@ -31,8 +31,8 @@ Or install it yourself as:
 **Equivalence** matcher:
 
 ```ruby
-eql = Matchi::Matcher::Eql.new('foo')
-eql.matches? { 'foo' } # => true
+eql = Matchi::Matcher::Eql.new("foo")
+eql.matches? { "foo" } # => true
 ```
 
 **Identity** matcher:
@@ -46,7 +46,7 @@ equal.matches? { :foo } # => true
 
 ```ruby
 match = Matchi::Matcher::Match.new(/^foo$/)
-match.matches? { 'foo' } # => true
+match.matches? { "foo" } # => true
 ```
 
 **Expecting errors** matcher:
@@ -101,7 +101,7 @@ be_the_answer.matches? { 42 } # => true
 A **Be prime** matcher:
 
 ```ruby
-require 'prime'
+require "prime"
 
 module Matchi
   module Matcher
@@ -124,6 +124,7 @@ module Matchi
   module Matcher
     class StartWith < ::Matchi::Matcher::Base
       def initialize(expected)
+        super()
         @expected = expected
       end
 
@@ -134,8 +135,8 @@ module Matchi
   end
 end
 
-start_with = Matchi::Matcher::StartWith.new('foo')
-start_with.matches? { 'foobar' } # => true
+start_with = Matchi::Matcher::StartWith.new("foo")
+start_with.matches? { "foobar" } # => true
 ```
 
 ## Contact
@@ -162,7 +163,7 @@ The gem is available as open source under the terms of the [MIT License](https:/
 <p>
   This project is sponsored by:<br />
   <a href="https://sashite.com/"><img
-    src="https://github.com/fixrb/matchi/raw/master/img/sashite.png"
+    src="https://github.com/fixrb/matchi/raw/main/img/sashite.png"
     alt="Sashite" /></a>
 </p>
 

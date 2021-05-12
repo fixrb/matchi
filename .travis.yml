@@ -1,24 +1,20 @@
 language: ruby
 sudo: false
 cache: bundler
+branches:
+  only: main
 before_install:
   - gem install bundler
 script:
-  - bundle exec rubocop
   - bundle exec rake test
 rvm:
-  - 2.3.3
-  - 2.4.0
-  - 2.6.1
-  - 2.7.0
+  - 2.7
+  - 3.0
   - ruby-head
-  - jruby-head
-  - rbx-3
 matrix:
   allow_failures:
     - rvm: ruby-head
-    - rvm: jruby-head
-    - rvm: rbx-3
+  fast_finish: true
 notifications:
   webhooks:
     urls:

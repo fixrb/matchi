@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative File.join('..', 'support', 'coverage')
-require_relative File.join('..', '..', 'lib', 'matchi', 'matcher', 'base')
+require_relative File.join("..", "support", "coverage")
+require_relative File.join("..", "..", "lib", "matchi", "matcher", "base")
 
 module Matchi
   module Matcher
@@ -12,12 +12,11 @@ module Matchi
   end
 end
 
-expected = nil
-matcher = Matchi::Matcher::IncorrectlyImplemented.new(expected)
+matcher = Matchi::Matcher::IncorrectlyImplemented.new
 
 # It is expected to raise NotImplementedError
 begin
-  matcher.matches? { 42 } && raise('A NotImplementedError was expected.')
+  matcher.matches? { 42 } && raise("A NotImplementedError was expected.")
 rescue NotImplementedError => e
   e # => A not implemented error has been raised, as expected.
 end

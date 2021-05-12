@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative File.join('..', 'support', 'coverage')
+require_relative File.join("..", "support", "coverage")
 
 module Matchi
   module Matcher
@@ -25,7 +25,7 @@ module Matchi
 end
 
 expected = nil
-matcher = Matchi::Matcher::BeTheAnswer.new(expected)
+matcher = Matchi::Matcher::BeTheAnswer.new
 
 # It returns the symbol
 raise unless matcher.class.to_sym == :be_the_answer
@@ -37,10 +37,10 @@ raise unless matcher.matches? { 42 }
 raise if matcher.matches? { 4 }
 
 # It returns this string
-raise unless matcher.to_s == 'be_the_answer'
+raise unless matcher.to_s == "be_the_answer"
 
 # It returns this representation
-raise unless matcher.inspect == 'Matchi::Matcher::BeTheAnswer()'
+raise unless matcher.inspect == "Matchi::Matcher::BeTheAnswer()"
 
 # It returns an expected given value
 raise unless matcher.expected == expected
