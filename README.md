@@ -6,7 +6,7 @@
 [![Inline docs](https://inch-ci.org/github/fixrb/matchi.svg?branch=main)][inchpages]
 [![Documentation](https://img.shields.io/:yard-docs-38c800.svg)][rubydoc]
 
-> Collection of expectation matchers for Ruby.
+> Collection of expectation matchers for Ruby 🤹
 
 ## Installation
 

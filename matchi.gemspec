@@ -5,7 +5,7 @@ Gem::Specification.new do |spec|
   spec.version      = File.read("VERSION.semver").chomp
   spec.author       = "Cyril Kato"
   spec.email        = "contact@cyril.email"
-  spec.summary      = "Collection of expectation matchers for Ruby."
+  spec.summary      = "Collection of expectation matchers for Ruby 🤹"
   spec.description  = spec.summary
   spec.homepage     = "https://github.com/fixrb/matchi"
   spec.required_ruby_version = Gem::Requirement.new(">= 2.7.0")
