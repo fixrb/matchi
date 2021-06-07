@@ -28,7 +28,7 @@ module Matchi
       #
       # @return [Boolean] Comparison between actual and expected values.
       def matches?(*, **)
-        expected.match(yield).nil?.equal?(false)
+        expected.match?(yield)
       end
     end
   end

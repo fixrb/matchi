@@ -88,7 +88,7 @@ module Matchi
   module Matcher
     class BeTheAnswer < ::Matchi::Matcher::Base
       def matches?
-        42.equal? yield
+        42.equal?(yield)
       end
     end
   end
@@ -107,7 +107,7 @@ module Matchi
   module Matcher
     class BePrime < ::Matchi::Matcher::Base
       def matches?
-        Prime.prime? yield
+        Prime.prime?(yield)
       end
     end
   end
@@ -129,7 +129,7 @@ module Matchi
       end
 
       def matches?
-        !Regexp.new("^#{expected}").match(yield).nil?
+        Regexp.new(/\A#{expected}/).match?(yield)
       end
     end
   end
@@ -144,19 +144,13 @@ start_with.matches? { "foobar" } # => true
 * Home page: https://github.com/fixrb/matchi
 * Bugs/issues: https://github.com/fixrb/matchi/issues
 
-## Rubies
-
-* [MRI](https://www.ruby-lang.org/)
-* [Rubinius](https://rubinius.com/)
-* [JRuby](https://www.jruby.org/)
-
 ## Versioning
 
 __Matchi__ follows [Semantic Versioning 2.0](https://semver.org/).
 
 ## License
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+The [gem](https://rubygems.org/gems/matchi) is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 
 ***
 
