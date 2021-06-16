@@ -4,7 +4,7 @@ require_relative "base"
 
 module Matchi
   module Matcher
-    # **Expecting errors** matcher.
+    # *Expecting errors* matcher.
     class RaiseException < ::Matchi::Matcher::Base
       # Initialize the matcher with a descendant of class Exception.
       #

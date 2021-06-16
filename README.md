@@ -3,7 +3,6 @@
 [![Build Status](https://api.travis-ci.org/fixrb/matchi.svg?branch=main)][travis]
 [![Code Climate](https://codeclimate.com/github/fixrb/matchi/badges/gpa.svg)][codeclimate]
 [![Gem Version](https://badge.fury.io/rb/matchi.svg)][gem]
-[![Inline docs](https://inch-ci.org/github/fixrb/matchi.svg?branch=main)][inchpages]
 [![Documentation](https://img.shields.io/:yard-docs-38c800.svg)][rubydoc]
 
 > Collection of expectation matchers for Ruby 🤹
@@ -18,11 +17,15 @@ gem "matchi"
 
 And then execute:
 
-    $ bundle
+```sh
+bundle
+```
 
 Or install it yourself as:
 
-    $ gem install matchi
+```sh
+gem install matchi
+```
 
 ## Usage
 
@@ -75,6 +78,13 @@ be_false.matches? { false } # => true
 ```ruby
 be_nil = Matchi::Matcher::BeNil.new
 be_nil.matches? { nil } # => true
+```
+
+**Type/class** matcher:
+
+```ruby
+be_an_instance_of = Matchi::Matcher::BeAnInstanceOf.new(String)
+be_an_instance_of.matches? { "foo" } # => true
 ```
 
 ### Custom matchers
@@ -164,5 +174,4 @@ The [gem](https://rubygems.org/gems/matchi) is available as open source under th
 [gem]: https://rubygems.org/gems/matchi
 [travis]: https://travis-ci.org/fixrb/matchi
 [codeclimate]: https://codeclimate.com/github/fixrb/matchi
-[inchpages]: https://inch-ci.org/github/fixrb/matchi
 [rubydoc]: https://rubydoc.info/gems/matchi/frames

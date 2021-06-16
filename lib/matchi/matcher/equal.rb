@@ -4,7 +4,7 @@ require_relative "base"
 
 module Matchi
   module Matcher
-    # **Identity** matcher.
+    # *Identity* matcher.
     class Equal < ::Matchi::Matcher::Base
       # Initialize the matcher with an object.
       #

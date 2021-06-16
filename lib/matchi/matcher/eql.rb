@@ -4,7 +4,7 @@ require_relative "base"
 
 module Matchi
   module Matcher
-    # **Equivalence** matcher.
+    # *Equivalence* matcher.
     class Eql < ::Matchi::Matcher::Base
       # Initialize the matcher with an object.
       #

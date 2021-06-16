@@ -4,7 +4,7 @@ require_relative "base"
 
 module Matchi
   module Matcher
-    # **Untruth** matcher.
+    # *Untruth* matcher.
     class BeFalse < ::Matchi::Matcher::Base
       # Boolean comparison between the actual value and the expected value.
       #

@@ -4,7 +4,7 @@ require_relative "base"
 
 module Matchi
   module Matcher
-    # **Regular expressions** matcher.
+    # *Regular expressions* matcher.
     class Match < ::Matchi::Matcher::Base
       # Initialize the matcher with an instance of Regexp.
       #
