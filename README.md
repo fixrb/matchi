@@ -1,9 +1,10 @@
 # Matchi
 
-[![Build Status](https://api.travis-ci.org/fixrb/matchi.svg?branch=main)][travis]
-[![Code Climate](https://codeclimate.com/github/fixrb/matchi/badges/gpa.svg)][codeclimate]
-[![Gem Version](https://badge.fury.io/rb/matchi.svg)][gem]
-[![Documentation](https://img.shields.io/:yard-docs-38c800.svg)][rubydoc]
+[![Version](https://img.shields.io/github/v/tag/fixrb/matchi?label=Version&logo=github)](https://github.com/fixrb/matchi/releases)
+[![Yard documentation](https://img.shields.io/badge/Yard-documentation-blue.svg?logo=github)](https://rubydoc.info/github/fixrb/matchi/main)
+[![CI](https://github.com/fixrb/matchi/workflows/CI/badge.svg?branch=main)](https://github.com/fixrb/matchi/actions?query=workflow%3Aci+branch%3Amain)
+[![RuboCop](https://github.com/fixrb/matchi/workflows/RuboCop/badge.svg?branch=main)](https://github.com/fixrb/matchi/actions?query=workflow%3Arubocop+branch%3Amain)
+[![License](https://img.shields.io/github/license/fixrb/matchi?label=License&logo=github)](https://github.com/fixrb/matchi/raw/main/LICENSE.md)
 
 > Collection of expectation matchers for Ruby 🤹
 
@@ -170,8 +171,3 @@ The [gem](https://rubygems.org/gems/matchi) is available as open source under th
     src="https://github.com/fixrb/matchi/raw/main/img/sashite.png"
     alt="Sashite" /></a>
 </p>
-
-[gem]: https://rubygems.org/gems/matchi
-[travis]: https://travis-ci.org/fixrb/matchi
-[codeclimate]: https://codeclimate.com/github/fixrb/matchi
-[rubydoc]: https://rubydoc.info/gems/matchi/frames
