@@ -21,7 +21,7 @@ module Matchi
       #
       # @example Is it matching /^foo$/ regex?
       #   match = Matchi::Matcher::Match.new(/^foo$/)
-      #   match.matches? { 'foo' } # => true
+      #   match.matches? { "foo" } # => true
       #
       # @yieldreturn [#object_id] The actual value to compare to the expected
       #   one.

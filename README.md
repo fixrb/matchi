@@ -8,6 +8,8 @@
 
 > Collection of expectation matchers for Ruby 🤹
 
+![A rubyist juggling between colored balls representing expectation matchers](https://github.com/fixrb/matchi/raw/main/img/matchi.jpg)
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -28,7 +30,19 @@ Or install it yourself as:
 gem install matchi
 ```
 
+## Overview
+
+__Matchi__ provides a collection of damn simple expectation matchers.
+
 ## Usage
+
+To make __Matchi__ available:
+
+```ruby
+require "matchi"
+```
+
+All examples here assume that this has been done.
 
 ### Built-in matchers
 
@@ -90,7 +104,8 @@ be_an_instance_of.matches? { "foo" } # => true
 
 ### Custom matchers
 
-Custom matchers can easily be defined for expressing expectations.  They can be any Ruby class that responds to `matches?`, `to_s` and `to_h` instance methods.
+Custom matchers can easily be defined for expressing expectations.
+They can be any Ruby class that responds to `matches?` instance method with a block.
 
 A **Be the answer** matcher:
 
@@ -148,6 +163,27 @@ end
 
 start_with = Matchi::Matcher::StartWith.new("foo")
 start_with.matches? { "foobar" } # => true
+```
+
+### Helper methods
+
+For convenience, it is possible to instantiate a matcher with a method rather than with its class.
+To do so, the `Helper` module can be included like this:
+
+```ruby
+require "matchi/helper"
+
+class MatcherCollection
+  include ::Matchi::Helper
+end
+```
+
+The set of loaded matcher then becomes accessible via a dynamically generated instance method, like these:
+
+```ruby
+matcher = MatcherCollection.new
+matcher.equal(42).matches? { 44 } # => false
+matcher.be_an_instance_of(String).matches? { "안녕하세요" } # => true
 ```
 
 ## Contact
