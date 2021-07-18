@@ -98,7 +98,7 @@ be_nil.matches? { nil } # => true
 **Type/class** matcher:
 
 ```ruby
-be_an_instance_of = Matchi::Matcher::BeAnInstanceOf.new(String)
+be_an_instance_of = Matchi::Matcher::BeAnInstanceOf.new(:String)
 be_an_instance_of.matches? { "foo" } # => true
 ```
 

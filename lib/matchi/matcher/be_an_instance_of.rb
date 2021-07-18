@@ -11,10 +11,10 @@ module Matchi
       # @example A string matcher
       #   Matchi::Matcher::BeAnInstanceOf.new(String)
       #
-      # @param expected [Class] An expected class.
+      # @param expected [#to_s] The name of a module.
       def initialize(expected)
         super()
-        @expected = expected
+        @expected = self.class.const_get String(expected)
       end
 
       # Boolean comparison between the class of the actual value and the
@@ -22,6 +22,12 @@ module Matchi
       #
       # @example Is it an instance of string?
       #   be_an_instance_of = Matchi::Matcher::BeInstanceOf.new(String)
+      #   be_an_instance_of.matches? { "foo" } # => true
+      #
+      #   be_an_instance_of = Matchi::Matcher::BeInstanceOf.new(:String)
+      #   be_an_instance_of.matches? { "foo" } # => true
+      #
+      #   be_an_instance_of = Matchi::Matcher::BeInstanceOf.new("String")
       #   be_an_instance_of.matches? { "foo" } # => true
       #
       # @yieldreturn [#class] the actual value to compare to the expected one.
