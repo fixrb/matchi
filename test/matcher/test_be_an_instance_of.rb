@@ -23,7 +23,7 @@ raise unless matcher.to_s == "be_an_instance_of Symbol"
 raise unless matcher.inspect == "Matchi::Matcher::BeAnInstanceOf(Symbol)"
 
 # It returns an expected given value
-raise unless matcher.expected == expected
+raise unless matcher.expected == :Symbol
 
 # When expected object is a symbol
 expected = :Symbol
@@ -45,4 +45,4 @@ raise unless matcher.to_s == "be_an_instance_of Symbol"
 raise unless matcher.inspect == "Matchi::Matcher::BeAnInstanceOf(Symbol)"
 
 # It returns an expected given value
-raise unless matcher.expected == self.class.const_get(expected)
+raise unless matcher.expected == :Symbol

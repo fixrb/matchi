@@ -8,13 +8,18 @@ module Matchi
     class BeAnInstanceOf < ::Matchi::Matcher::Base
       # Initialize the matcher with an object.
       #
-      # @example A string matcher
-      #   Matchi::Matcher::BeAnInstanceOf.new(String)
+      # @example A duck matcher
+      #   Matchi::Matcher::BeAnInstanceOf.new(:Duck)
       #
       # @param expected [#to_s] The name of a module.
       def initialize(expected)
         super()
-        @expected = self.class.const_get String(expected)
+        @expected = String(expected).to_sym
+      end
+
+      # (see Base#inspect)
+      def inspect
+        "#{self.class}(#{expected})"
       end
 
       # Boolean comparison between the class of the actual value and the
@@ -34,7 +39,12 @@ module Matchi
       #
       # @return [Boolean] Comparison between actual and expected values.
       def matches?(*, **)
-        expected.equal?(yield.class)
+        self.class.const_get(expected).equal?(yield.class)
+      end
+
+      # (see Base#to_s)
+      def to_s
+        "#{self.class.to_sym} #{expected}"
       end
     end
   end

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 # Namespace for the Matchi library.
+#
+# @api public
 module Matchi
 end
 

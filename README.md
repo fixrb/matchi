@@ -183,7 +183,7 @@ The set of loaded matcher then becomes accessible via a dynamically generated in
 ```ruby
 matcher = MatcherCollection.new
 matcher.equal(42).matches? { 44 } # => false
-matcher.be_an_instance_of(String).matches? { "안녕하세요" } # => true
+matcher.be_an_instance_of(:String).matches? { "안녕하세요" } # => true
 ```
 
 ## Contact
