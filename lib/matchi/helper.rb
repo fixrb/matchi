@@ -32,8 +32,8 @@ module Matchi
 
       matcher_klass = ::Matchi::Matcher.const_get(matcher_const)
 
-      define_method(matcher_klass.to_sym) do |*args|
-        matcher_klass.new(*args)
+      define_method(matcher_klass.to_sym) do |*args, **kwargs, &block|
+        matcher_klass.new(*args, **kwargs, &block)
       end
     end
   end

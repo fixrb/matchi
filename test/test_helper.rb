@@ -11,6 +11,7 @@ end
 
 sandbox = Sandbox.new
 
+raise unless sandbox.be_an_instance_of(:String).matches? { "foo" }
 raise unless sandbox.be_false.matches? { false }
 raise unless sandbox.be_nil.matches? { nil }
 raise unless sandbox.be_true.matches? { true }
@@ -18,6 +19,7 @@ raise unless sandbox.eql(42).matches? { 42 }
 raise unless sandbox.equal(42).matches? { 42 }
 raise unless sandbox.match(/^foo/).matches? { "foobar" }
 raise unless sandbox.raise_exception(NameError).matches? { Matchi::Boom }
+raise unless sandbox.satisfy { |value| value == "foo" }.matches? { "foo" }
 
 # Test helper methods of custom matchers
 
