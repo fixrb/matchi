@@ -102,6 +102,13 @@ be_an_instance_of = Matchi::Matcher::BeAnInstanceOf.new(:String)
 be_an_instance_of.matches? { "foo" } # => true
 ```
 
+**Satisfy** matcher:
+
+```ruby
+satisfy = Matchi::Matcher::Satisfy.new { |value| value == 42 }
+satisfy.matches? { 42 } # => true
+```
+
 ### Custom matchers
 
 Custom matchers can easily be defined for expressing expectations.
