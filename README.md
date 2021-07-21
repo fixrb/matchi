@@ -102,6 +102,30 @@ be_an_instance_of = Matchi::Matcher::BeAnInstanceOf.new(:String)
 be_an_instance_of.matches? { "foo" } # => true
 ```
 
+**Change** matcher:
+
+```ruby
+object = []
+change = Matchi::Matcher::Change.new(object, :length).by(1)
+change.matches? { object << 1 } # => true
+
+object = []
+change = Matchi::Matcher::Change.new(object, :length).by_at_least(1)
+change.matches? { object << 1 } # => true
+
+object = []
+change = Matchi::Matcher::Change.new(object, :length).by_at_most(1)
+change.matches? { object << 1 } # => true
+
+object = "foo"
+change = Matchi::Matcher::Change.new(object, :to_s).from("foo").to("FOO")
+change.matches? { object.upcase! } # => true
+
+object = "foo"
+change = Matchi::Matcher::Change.new(object, :to_s).to("FOO")
+change.matches? { object.upcase! } # => true
+```
+
 **Satisfy** matcher:
 
 ```ruby

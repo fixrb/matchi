@@ -1,4 +1,4 @@
-# frozen_string_literal: true
+# frozen_string_literal: false
 
 require_relative File.join("support", "coverage")
 require_relative File.join("..", "lib", "matchi", "helper")
@@ -20,6 +20,21 @@ raise unless sandbox.equal(42).matches? { 42 }
 raise unless sandbox.match(/^foo/).matches? { "foobar" }
 raise unless sandbox.raise_exception(NameError).matches? { Matchi::Boom }
 raise unless sandbox.satisfy { |value| value == "foo" }.matches? { "foo" }
+
+object = []
+raise unless sandbox.change(object, :length).by(1).matches? { object << 1 }
+
+object = []
+raise unless sandbox.change(object, :length).by_at_least(1).matches? { object << 1 }
+
+object = []
+raise unless sandbox.change(object, :length).by_at_most(1).matches? { object << 1 }
+
+object = "foo"
+raise unless sandbox.change(object, :to_s).from("foo").to("FOO").matches? { object.upcase! }
+
+object = "foo"
+raise unless sandbox.change(object, :to_s).to("FOO").matches? { object.upcase! }
 
 # Test helper methods of custom matchers
 
@@ -45,7 +60,7 @@ module Matchi
   end
 end
 
-load "matchi/helper.rb"
+load File.join(File.dirname(__FILE__), "..", "lib", "matchi", "helper.rb")
 
 class Sandbox
   include ::Matchi::Helper
