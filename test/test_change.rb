@@ -19,6 +19,9 @@ raise unless matcher.to_s == "change by 2"
 # It returns this representation
 raise unless matcher.inspect == "Matchi::Change::By(2)"
 
+# It returns the given expected value
+raise unless matcher.expected == 2
+
 object = []
 matcher = Matchi::Change.new(object, :length).by_at_least(2)
 
@@ -36,6 +39,9 @@ raise unless matcher.to_s == "change by at least 2"
 # It returns this representation
 raise unless matcher.inspect == "Matchi::Change::ByAtLeast(2)"
 
+# It returns the given expected value
+raise unless matcher.expected == 2
+
 object = []
 matcher = Matchi::Change.new(object, :length).by_at_most(1)
 
@@ -52,6 +58,9 @@ raise unless matcher.to_s == "change by at most 1"
 # It returns this representation
 raise unless matcher.inspect == "Matchi::Change::ByAtMost(1)"
 
+# It returns the given expected value
+raise unless matcher.expected == 1
+
 object = "foo"
 matcher = Matchi::Change.new(object, :to_s).from("foo").to("FOO")
 
@@ -67,6 +76,9 @@ raise unless matcher.to_s == 'change from "foo" to "FOO"'
 # It returns this representation
 raise unless matcher.inspect == 'Matchi::Change::From::To("foo", "FOO")'
 
+# It returns the given expected value
+raise unless matcher.expected == "FOO"
+
 object = "foo"
 matcher = Matchi::Change.new(object, :to_s).to("FOO")
 
@@ -81,3 +93,6 @@ raise unless matcher.to_s == 'change to "FOO"'
 
 # It returns this representation
 raise unless matcher.inspect == 'Matchi::Change::To("FOO")'
+
+# It returns the given expected value
+raise unless matcher.expected == "FOO"

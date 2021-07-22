@@ -3,6 +3,9 @@
 module Matchi
   # *Regular expressions* matcher.
   class Match
+    # @return [#match] A regular expression.
+    attr_reader :expected
+
     # Initialize the matcher with an instance of Regexp.
     #
     # @example
@@ -21,24 +24,26 @@ module Matchi
     #   require "matchi/match"
     #
     #   matcher = Matchi::Match.new(/^foo$/)
+    #
+    #   matcher.expected           # => /^foo$/
     #   matcher.matches? { "foo" } # => true
     #
     # @yieldreturn [#object_id] The actual value to compare to the expected
     #   one.
     #
     # @return [Boolean] Comparison between actual and expected values.
-    def matches?(*, **)
-      @expected.match?(yield)
+    def matches?
+      expected.match?(yield)
     end
 
     # A string containing a human-readable representation of the matcher.
     def inspect
-      "#{self.class}(#{@expected.inspect})"
+      "#{self.class}(#{expected.inspect})"
     end
 
     # Returns a string representing the matcher.
     def to_s
-      "match #{@expected.inspect}"
+      "match #{expected.inspect}"
     end
   end
 end

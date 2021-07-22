@@ -30,8 +30,8 @@ module Matchi
       #
       #   object = "foo"
       #
-      #   change = Matchi::Change::From.new("foo") { object.to_s }
-      #   change.to("FOO")
+      #   change_from_wrapper = Matchi::Change::From.new("foo") { object.to_s }
+      #   change_from_wrapper.to("FOO")
       #
       # @param expected_new_value [#object_id] The new value to expect.
       #

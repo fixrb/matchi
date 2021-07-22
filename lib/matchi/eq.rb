@@ -3,6 +3,9 @@
 module Matchi
   # *Equivalence* matcher.
   class Eq
+    # @return [#eql?] An expected equivalent object.
+    attr_reader :expected
+
     # Initialize the matcher with an object.
     #
     # @example
@@ -21,24 +24,26 @@ module Matchi
     #   require "matchi/eq"
     #
     #   matcher = Matchi::Eq.new("foo")
+    #
+    #   matcher.expected           # => "foo"
     #   matcher.matches? { "foo" } # => true
     #
     # @yieldreturn [#object_id] The actual value to compare to the expected
     #   one.
     #
     # @return [Boolean] Comparison between actual and expected values.
-    def matches?(*, **)
-      @expected.eql?(yield)
+    def matches?
+      expected.eql?(yield)
     end
 
     # A string containing a human-readable representation of the matcher.
     def inspect
-      "#{self.class}(#{@expected.inspect})"
+      "#{self.class}(#{expected.inspect})"
     end
 
     # Returns a string representing the matcher.
     def to_s
-      "eq #{@expected.inspect}"
+      "eq #{expected.inspect}"
     end
   end
 end

@@ -32,8 +32,8 @@ module Matchi
     #
     #   object = []
     #
-    #   change = Matchi::Change.new(object, :length)
-    #   change.by_at_least(1)
+    #   change_wrapper = Matchi::Change.new(object, :length)
+    #   change_wrapper.by_at_least(1)
     #
     # @param expected [#object_id] The minimum delta of the expected change.
     #
@@ -49,8 +49,8 @@ module Matchi
     #
     #   object = []
     #
-    #   change = Matchi::Change.new(object, :length)
-    #   change.by_at_most(1)
+    #   change_wrapper = Matchi::Change.new(object, :length)
+    #   change_wrapper.by_at_most(1)
     #
     # @param expected [#object_id] The maximum delta of the expected change.
     #
@@ -66,8 +66,8 @@ module Matchi
     #
     #   object = []
     #
-    #   change = Matchi::Change.new(object, :length)
-    #   change.by(1)
+    #   change_wrapper = Matchi::Change.new(object, :length)
+    #   change_wrapper.by(1)
     #
     # @param expected [#object_id] The delta of the expected change.
     #
@@ -81,8 +81,8 @@ module Matchi
     # @example
     #   require "matchi/change"
     #
-    #   change = Matchi::Change.new("foo", :to_s)
-    #   change.from("foo")
+    #   change_wrapper = Matchi::Change.new("foo", :to_s)
+    #   change_wrapper.from("foo")
     #
     # @param expected [#object_id] The original value.
     #
@@ -96,8 +96,8 @@ module Matchi
     # @example
     #   require "matchi/change"
     #
-    #   change = Matchi::Change.new("foo", :to_s)
-    #   change.to("FOO")
+    #   change_wrapper = Matchi::Change.new("foo", :to_s)
+    #   change_wrapper.to("FOO")
     #
     # @param expected [#object_id] The new value to expect.
     #

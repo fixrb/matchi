@@ -18,6 +18,9 @@ raise unless matcher.to_s == "be an instance of Symbol"
 # It returns this representation
 raise unless matcher.inspect == "Matchi::BeAnInstanceOf(Symbol)"
 
+# It returns the given expected value
+raise unless matcher.expected == :Symbol
+
 # When expected object is a symbol
 matcher = Matchi::BeAnInstanceOf.new(:Symbol)
 
@@ -32,3 +35,6 @@ raise unless matcher.to_s == "be an instance of Symbol"
 
 # It returns this representation
 raise unless matcher.inspect == "Matchi::BeAnInstanceOf(Symbol)"
+
+# It returns the given expected value
+raise unless matcher.expected == :Symbol

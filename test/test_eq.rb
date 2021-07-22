@@ -16,3 +16,6 @@ raise unless matcher.to_s == 'eq "foo"'
 
 # It returns this representation
 raise unless matcher.inspect == 'Matchi::Eq("foo")'
+
+# It returns the given expected value
+raise unless matcher.expected == "foo"

@@ -3,6 +3,9 @@
 module Matchi
   # *Type/class* matcher.
   class BeAnInstanceOf
+    # @return [#to_s] A (name of a) class or module.
+    attr_reader :expected
+
     # Initialize the matcher with (the name of) a class or module.
     #
     # @example
@@ -22,23 +25,25 @@ module Matchi
     #   require "matchi/be_an_instance_of"
     #
     #   matcher = Matchi::BeAnInstanceOf.new(String)
+    #
+    #   matcher.expected           # => :String
     #   matcher.matches? { "foo" } # => true
     #
     # @yieldreturn [#class] the actual value to compare to the expected one.
     #
     # @return [Boolean] Comparison between actual and expected values.
-    def matches?(*, **)
-      self.class.const_get(@expected).equal?(yield.class)
+    def matches?
+      self.class.const_get(expected).equal?(yield.class)
     end
 
     # A string containing a human-readable representation of the matcher.
     def inspect
-      "#{self.class}(#{@expected})"
+      "#{self.class}(#{expected})"
     end
 
     # Returns a string representing the matcher.
     def to_s
-      "be an instance of #{@expected}"
+      "be an instance of #{expected}"
     end
   end
 end
