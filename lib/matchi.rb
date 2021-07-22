@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
-# Namespace for the Matchi library.
+# A collection of damn simple expectation matchers.
 #
 # @api public
 module Matchi
 end
 
-require_relative File.join("matchi", "matcher")
+Dir[File.join(File.dirname(__FILE__), "matchi", "*.rb")].each do |fname|
+  require_relative fname
+end

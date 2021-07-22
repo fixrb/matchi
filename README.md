@@ -6,9 +6,15 @@
 [![RuboCop](https://github.com/fixrb/matchi/workflows/RuboCop/badge.svg?branch=main)](https://github.com/fixrb/matchi/actions?query=workflow%3Arubocop+branch%3Amain)
 [![License](https://img.shields.io/github/license/fixrb/matchi?label=License&logo=github)](https://github.com/fixrb/matchi/raw/main/LICENSE.md)
 
-> Collection of expectation matchers for Ruby 🤹
+> Collection of expectation matchers for Rubyists 🤹
 
-![A rubyist juggling between colored balls representing expectation matchers](https://github.com/fixrb/matchi/raw/main/img/matchi.jpg)
+![A Rubyist juggling between Matchi letters](https://github.com/fixrb/matchi/raw/main/img/matchi.jpg)
+
+## Project goals
+
+* Provide a collection of useful generic matchers.
+* Adding matchers should be as simple as possible.
+* Being framework agnostic and easy to integrate.
 
 ## Installation
 
@@ -44,115 +50,97 @@ require "matchi"
 
 All examples here assume that this has been done.
 
+### Anatomy of a matcher
+
+A __Matchi__ matcher is just an object that responds to the `matches?` method with a block as argument, and returns a boolean. That's all it is.
+
+But let's see some examples.
+
 ### Built-in matchers
 
 **Equivalence** matcher:
 
 ```ruby
-eql = Matchi::Matcher::Eql.new("foo")
-eql.matches? { "foo" } # => true
+matcher = Matchi::Eq.new("foo")
+matcher.matches? { "foo" } # => true
 ```
 
 **Identity** matcher:
 
 ```ruby
-equal = Matchi::Matcher::Equal.new(:foo)
-equal.matches? { :foo } # => true
+matcher = Matchi::Be.new(:foo)
+matcher.matches? { :foo } # => true
 ```
 
 **Regular expressions** matcher:
 
 ```ruby
-match = Matchi::Matcher::Match.new(/^foo$/)
-match.matches? { "foo" } # => true
+matcher = Matchi::Match.new(/^foo$/)
+matcher.matches? { "foo" } # => true
 ```
 
 **Expecting errors** matcher:
 
 ```ruby
-raise_exception = Matchi::Matcher::RaiseException.new(NameError)
-raise_exception.matches? { Boom } # => true
-```
-
-**Truth** matcher:
-
-```ruby
-be_true = Matchi::Matcher::BeTrue.new
-be_true.matches? { true } # => true
-```
-
-**Untruth** matcher:
-
-```ruby
-be_false = Matchi::Matcher::BeFalse.new
-be_false.matches? { false } # => true
-```
-
-**Nil** matcher:
-
-```ruby
-be_nil = Matchi::Matcher::BeNil.new
-be_nil.matches? { nil } # => true
+matcher = Matchi::RaiseException.new(NameError)
+matcher.matches? { Boom } # => true
 ```
 
 **Type/class** matcher:
 
 ```ruby
-be_an_instance_of = Matchi::Matcher::BeAnInstanceOf.new(:String)
-be_an_instance_of.matches? { "foo" } # => true
+matcher = Matchi::BeAnInstanceOf.new(:String)
+matcher.matches? { "foo" } # => true
 ```
 
 **Change** matcher:
 
 ```ruby
 object = []
-change = Matchi::Matcher::Change.new(object, :length).by(1)
-change.matches? { object << 1 } # => true
+matcher = Matchi::Change.new(object, :length).by(1)
+matcher.matches? { object << 1 } # => true
 
 object = []
-change = Matchi::Matcher::Change.new(object, :length).by_at_least(1)
-change.matches? { object << 1 } # => true
+matcher = Matchi::Change.new(object, :length).by_at_least(1)
+matcher.matches? { object << 1 } # => true
 
 object = []
-change = Matchi::Matcher::Change.new(object, :length).by_at_most(1)
-change.matches? { object << 1 } # => true
+matcher = Matchi::Change.new(object, :length).by_at_most(1)
+matcher.matches? { object << 1 } # => true
 
 object = "foo"
-change = Matchi::Matcher::Change.new(object, :to_s).from("foo").to("FOO")
-change.matches? { object.upcase! } # => true
+matcher = Matchi::Change.new(object, :to_s).from("foo").to("FOO")
+matcher.matches? { object.upcase! } # => true
 
 object = "foo"
-change = Matchi::Matcher::Change.new(object, :to_s).to("FOO")
-change.matches? { object.upcase! } # => true
+matcher = Matchi::Change.new(object, :to_s).to("FOO")
+matcher.matches? { object.upcase! } # => true
 ```
 
 **Satisfy** matcher:
 
 ```ruby
-satisfy = Matchi::Matcher::Satisfy.new { |value| value == 42 }
-satisfy.matches? { 42 } # => true
+matcher = Matchi::Satisfy.new { |value| value == 42 }
+matcher.matches? { 42 } # => true
 ```
 
 ### Custom matchers
 
-Custom matchers can easily be defined for expressing expectations.
-They can be any Ruby class that responds to `matches?` instance method with a block.
+Custom matchers can easily be added to express more specific expectations.
 
 A **Be the answer** matcher:
 
 ```ruby
 module Matchi
-  module Matcher
-    class BeTheAnswer < ::Matchi::Matcher::Base
-      def matches?
-        42.equal?(yield)
-      end
+  class BeTheAnswer
+    def matches?
+      42.equal?(yield)
     end
   end
 end
 
-be_the_answer = Matchi::Matcher::BeTheAnswer.new
-be_the_answer.matches? { 42 } # => true
+matcher = Matchi::BeTheAnswer.new
+matcher.matches? { 42 } # => true
 ```
 
 A **Be prime** matcher:
@@ -161,60 +149,36 @@ A **Be prime** matcher:
 require "prime"
 
 module Matchi
-  module Matcher
-    class BePrime < ::Matchi::Matcher::Base
-      def matches?
-        Prime.prime?(yield)
-      end
+  class BePrime
+    def matches?
+      Prime.prime?(yield)
     end
   end
 end
 
-be_prime = Matchi::Matcher::BePrime.new
-be_prime.matches? { 42 } # => false
+matcher = Matchi::BePrime.new
+matcher.matches? { 42 } # => false
 ```
 
 A **Start with** matcher:
 
 ```ruby
 module Matchi
-  module Matcher
-    class StartWith < ::Matchi::Matcher::Base
-      def initialize(expected)
-        super()
-        @expected = expected
-      end
+  class StartWith
+    attr_reader :expected
 
-      def matches?
-        Regexp.new(/\A#{expected}/).match?(yield)
-      end
+    def initialize(expected)
+      @expected = expected
+    end
+
+    def matches?
+      Regexp.new(/\A#{expected}/).match?(yield)
     end
   end
 end
 
-start_with = Matchi::Matcher::StartWith.new("foo")
-start_with.matches? { "foobar" } # => true
-```
-
-### Helper methods
-
-For convenience, it is possible to instantiate a matcher with a method rather than with its class.
-To do so, the `Helper` module can be included like this:
-
-```ruby
-require "matchi/helper"
-
-class MatcherCollection
-  include ::Matchi::Helper
-end
-```
-
-The set of loaded matcher then becomes accessible via a dynamically generated instance method, like these:
-
-```ruby
-matcher = MatcherCollection.new
-matcher.equal(42).matches? { 44 } # => false
-matcher.be_an_instance_of(:String).matches? { "안녕하세요" } # => true
+matcher = Matchi::StartWith.new("foo")
+matcher.matches? { "foobar" } # => true
 ```
 
 ## Contact
@@ -228,7 +192,7 @@ __Matchi__ follows [Semantic Versioning 2.0](https://semver.org/).
 
 ## License
 
-The [gem](https://rubygems.org/gems/matchi) is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+The [gem](https://rubygems.org/gems/matchi) is available as open source under the terms of the [MIT License](https://github.com/fixrb/matchi/raw/main/LICENSE.md).
 
 ***
 
