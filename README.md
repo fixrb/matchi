@@ -93,9 +93,9 @@ matcher.matches? { "foo" } # => true
 **Expecting errors** matcher:
 
 ```ruby
-matcher = Matchi::RaiseException.new(NameError)
+matcher = Matchi::RaiseException.new(:NameError)
 
-matcher.expected          # => NameError
+matcher.expected          # => :NameError
 matcher.matches? { Boom } # => true
 ```
 

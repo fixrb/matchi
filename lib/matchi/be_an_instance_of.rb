@@ -3,7 +3,7 @@
 module Matchi
   # *Type/class* matcher.
   class BeAnInstanceOf
-    # @return [#to_s] A (name of a) class or module.
+    # @return [Symbol] The expected class name.
     attr_reader :expected
 
     # Initialize the matcher with (the name of) a class or module.
@@ -13,7 +13,7 @@ module Matchi
     #
     #   Matchi::BeAnInstanceOf.new(String)
     #
-    # @param expected [#to_s] A (name of a) class or module.
+    # @param expected [Class, #to_s] The expected class name.
     def initialize(expected)
       @expected = String(expected).to_sym
     end
