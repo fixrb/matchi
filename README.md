@@ -95,7 +95,7 @@ matcher.matches? { "foo" } # => true
 ```ruby
 matcher = Matchi::RaiseException.new(:NameError)
 
-matcher.expected          # => :NameError
+matcher.expected          # => "NameError"
 matcher.matches? { Boom } # => true
 ```
 
@@ -104,7 +104,7 @@ matcher.matches? { Boom } # => true
 ```ruby
 matcher = Matchi::BeAnInstanceOf.new(:String)
 
-matcher.expected           # => :String
+matcher.expected           # => "String"
 matcher.matches? { "foo" } # => true
 ```
 

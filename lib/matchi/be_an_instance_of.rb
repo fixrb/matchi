@@ -3,7 +3,7 @@
 module Matchi
   # *Type/class* matcher.
   class BeAnInstanceOf
-    # @return [Symbol] The expected class name.
+    # @return [String] The expected class name.
     attr_reader :expected
 
     # Initialize the matcher with (the name of) a class or module.
@@ -15,7 +15,7 @@ module Matchi
     #
     # @param expected [Class, #to_s] The expected class name.
     def initialize(expected)
-      @expected = String(expected).to_sym
+      @expected = String(expected)
     end
 
     # Boolean comparison between the class of the actual value and the
@@ -26,7 +26,7 @@ module Matchi
     #
     #   matcher = Matchi::BeAnInstanceOf.new(String)
     #
-    #   matcher.expected           # => :String
+    #   matcher.expected           # => "String"
     #   matcher.matches? { "foo" } # => true
     #
     # @yieldreturn [#class] the actual value to compare to the expected one.
