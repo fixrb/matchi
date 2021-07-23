@@ -35,11 +35,11 @@ module Matchi
     #   change_wrapper = Matchi::Change.new(object, :length)
     #   change_wrapper.by_at_least(1)
     #
-    # @param expected [#object_id] The minimum delta of the expected change.
+    # @param minimum_delta [#object_id] The minimum delta of the expected change.
     #
     # @return [#matches?] A *change by at least* matcher.
-    def by_at_least(expected)
-      ByAtLeast.new(expected, &@state)
+    def by_at_least(minimum_delta)
+      ByAtLeast.new(minimum_delta, &@state)
     end
 
     # Specifies a maximum delta of the expected change.
@@ -52,11 +52,11 @@ module Matchi
     #   change_wrapper = Matchi::Change.new(object, :length)
     #   change_wrapper.by_at_most(1)
     #
-    # @param expected [#object_id] The maximum delta of the expected change.
+    # @param maximum_delta [#object_id] The maximum delta of the expected change.
     #
     # @return [#matches?] A *change by at most* matcher.
-    def by_at_most(expected)
-      ByAtMost.new(expected, &@state)
+    def by_at_most(maximum_delta)
+      ByAtMost.new(maximum_delta, &@state)
     end
 
     # Specifies the delta of the expected change.
@@ -69,11 +69,11 @@ module Matchi
     #   change_wrapper = Matchi::Change.new(object, :length)
     #   change_wrapper.by(1)
     #
-    # @param expected [#object_id] The delta of the expected change.
+    # @param delta [#object_id] The delta of the expected change.
     #
     # @return [#matches?] A *change by* matcher.
-    def by(expected)
-      By.new(expected, &@state)
+    def by(delta)
+      By.new(delta, &@state)
     end
 
     # Specifies the original value.
@@ -84,11 +84,11 @@ module Matchi
     #   change_wrapper = Matchi::Change.new("foo", :to_s)
     #   change_wrapper.from("foo")
     #
-    # @param expected [#object_id] The original value.
+    # @param old_value [#object_id] The original value.
     #
     # @return [#matches?] A *change from* wrapper.
-    def from(expected)
-      From.new(expected, &@state)
+    def from(old_value)
+      From.new(old_value, &@state)
     end
 
     # Specifies the new value to expect.
@@ -99,11 +99,11 @@ module Matchi
     #   change_wrapper = Matchi::Change.new("foo", :to_s)
     #   change_wrapper.to("FOO")
     #
-    # @param expected [#object_id] The new value to expect.
+    # @param new_value [#object_id] The new value to expect.
     #
     # @return [#matches?] A *change to* matcher.
-    def to(expected)
-      To.new(expected, &@state)
+    def to(new_value)
+      To.new(new_value, &@state)
     end
   end
 end
