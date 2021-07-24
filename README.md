@@ -14,6 +14,7 @@
 
 * Adding matchers should be as simple as possible.
 * Being framework agnostic and easy to integrate.
+* Avoid false positives/negatives due to malicious actual values.
 
 ## Installation
 
@@ -53,11 +54,7 @@ All examples here assume that this has been done.
 
 A __Matchi__ matcher is an object that must respond to the `matches?` method with a block as argument, and return a boolean.
 
-To facilitate the integration of the matchers in other tools, it is recommended to expose the expected value via the `expected` method.
-
-That's all it is.
-
-Let's see some examples.
+To facilitate the integration of the matchers in other tools, __Matchi__ matchers may expose expected values via the `expected` method.
 
 ### Built-in matchers
 
@@ -183,8 +180,6 @@ require "prime"
 
 module Matchi
   class BePrime
-    attr_reader :expected
-
     def matches?
       Prime.prime?(yield)
     end
@@ -193,7 +188,6 @@ end
 
 matcher = Matchi::BePrime.new
 
-matcher.expected        # => nil
 matcher.matches? { 42 } # => false
 ```
 
