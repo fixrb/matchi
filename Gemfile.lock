@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    matchi (3.1.1)
+    matchi (3.2.0)
 
 GEM
   remote: https://rubygems.org/

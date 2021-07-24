@@ -78,6 +78,15 @@ matcher.expected          # => :foo
 matcher.matches? { :foo } # => true
 ```
 
+**Comparisons** matcher:
+
+```ruby
+matcher = Matchi::BeWithin.new(8).of(37)
+
+matcher.expected        # => 37
+matcher.matches? { 42 } # => true
+```
+
 **Regular expressions** matcher:
 
 ```ruby
