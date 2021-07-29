@@ -114,6 +114,20 @@ matcher.expected           # => "String"
 matcher.matches? { "foo" } # => true
 ```
 
+**Predicate** matcher:
+
+```ruby
+matcher = Matchi::Predicate.new(:be_empty)
+
+matcher.expected        # => [:empty?, [], {}, nil]
+matcher.matches? { [] } # => true
+
+matcher = Matchi::Predicate.new(:have_key, :foo)
+
+matcher.expected                 # => [:has_key?, [:foo], {}, nil]
+matcher.matches? { { foo: 42 } } # => true
+```
+
 **Change** matcher:
 
 ```ruby
