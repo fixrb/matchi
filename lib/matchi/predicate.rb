@@ -65,7 +65,7 @@ module Matchi
     # Returns a string representing the matcher.
     def to_s
       (
-        "#{@name.tr('_', ' ')} " + [
+        "#{@name.tr("_", " ")} " + [
           @args.map(&:inspect).join(", "),
           @kwargs.map { |k, v| "#{k}: #{v.inspect}" }.join(", "),
           (@block.nil? ? "" : "&block")
