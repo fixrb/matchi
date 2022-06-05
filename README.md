@@ -8,7 +8,7 @@
 
 > Collection of expectation matchers for Rubyists 🤹
 
-![A Rubyist juggling between Matchi letters](https://github.com/fixrb/matchi/raw/main/img/matchi.jpg)
+![A Rubyist juggling between Matchi letters](https://github.com/fixrb/matchi/raw/main/img/matchi.png)
 
 ## Project goals
 
