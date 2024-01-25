@@ -1,8 +1,8 @@
 # Matchi
 
-[![Version](https://img.shields.io/github/v/tag/fixrb/matchi?label=Version&logo=github)](https://github.com/fixrb/matchi/releases)
+[![Version](https://img.shields.io/github/v/tag/fixrb/matchi?label=Version&logo=github)](https://github.com/fixrb/matchi/tags)
 [![Yard documentation](https://img.shields.io/badge/Yard-documentation-blue.svg?logo=github)](https://rubydoc.info/github/fixrb/matchi/main)
-[![CI](https://github.com/fixrb/matchi/workflows/CI/badge.svg?branch=main)](https://github.com/fixrb/matchi/actions?query=workflow%3Aci+branch%3Amain)
+[![Ruby](https://github.com/fixrb/matchi/workflows/Ruby/badge.svg?branch=main)](https://github.com/fixrb/matchi/actions?query=workflow%3Aruby+branch%3Amain)
 [![RuboCop](https://github.com/fixrb/matchi/workflows/RuboCop/badge.svg?branch=main)](https://github.com/fixrb/matchi/actions?query=workflow%3Arubocop+branch%3Amain)
 [![License](https://img.shields.io/github/license/fixrb/matchi?label=License&logo=github)](https://github.com/fixrb/matchi/raw/main/LICENSE.md)
 
@@ -27,7 +27,7 @@ gem "matchi"
 And then execute:
 
 ```sh
-bundle
+bundle install
 ```
 
 Or install it yourself as:
@@ -226,7 +226,7 @@ module Matchi
     end
 
     def matches?
-      Regexp.new(/\A#{expected}/).match?(yield)
+      /\A#{expected}/.match?(yield)
     end
   end
 end
@@ -256,5 +256,5 @@ The [gem](https://rubygems.org/gems/matchi) is available as open source under th
   This project is sponsored by:<br />
   <a href="https://sashite.com/"><img
     src="https://github.com/fixrb/matchi/raw/main/img/sashite.png"
-    alt="Sashite" /></a>
+    alt="Sashité" /></a>
 </p>

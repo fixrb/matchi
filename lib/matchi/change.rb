@@ -21,8 +21,8 @@ module Matchi
     # @param method [Symbol]      The name of a method.
     # @param args   [Array]       A list of arguments.
     # @param kwargs [Hash]        A list of keyword arguments.
-    def initialize(object, method, *args, **kwargs, &block)
-      @state = -> { object.send(method, *args, **kwargs, &block) }
+    def initialize(object, method, ...)
+      @state = -> { object.send(method, ...) }
     end
 
     # Specifies a minimum delta of the expected change.
