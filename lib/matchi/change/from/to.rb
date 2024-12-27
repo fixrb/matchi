@@ -5,9 +5,6 @@ module Matchi
     class From
       # *Change from to* matcher.
       class To
-        # @return [#object_id] An expected new value.
-        attr_reader :expected
-
         # Initialize the matcher with two objects and a block.
         #
         # @example
@@ -36,8 +33,6 @@ module Matchi
         #   object = "foo"
         #
         #   matcher = Matchi::Change::From::To.new("foo", "FOO") { object.to_s }
-        #
-        #   matcher.expected                    # => "FOO"
         #   matcher.matches? { object.upcase! } # => true
         #
         # @yieldreturn [#object_id] The block of code to execute.
@@ -51,17 +46,17 @@ module Matchi
           yield
           value_after = @state.call
 
-          expected == value_after
+          @expected == value_after
         end
 
         # A string containing a human-readable representation of the matcher.
         def inspect
-          "#{self.class}(#{@expected_init.inspect}, #{expected.inspect})"
+          "#{self.class}(#{@expected_init.inspect}, #{@expected.inspect})"
         end
 
         # Returns a string representing the matcher.
         def to_s
-          "change from #{@expected_init.inspect} to #{expected.inspect}"
+          "change from #{@expected_init.inspect} to #{@expected.inspect}"
         end
       end
     end

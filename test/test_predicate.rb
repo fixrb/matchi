@@ -17,9 +17,6 @@ raise unless matcher.to_s == "be empty"
 # It returns this representation
 raise unless matcher.inspect == "Matchi::Predicate(be_empty, *[], **{}, &nil)"
 
-# It returns the given expected value
-raise unless matcher.expected == [:empty?, [], {}, nil]
-
 matcher = Matchi::Predicate.new("have_key", :foo)
 
 # It is expected to be true
@@ -33,9 +30,6 @@ raise unless matcher.to_s == "have key :foo"
 
 # It returns this representation
 raise unless matcher.inspect == "Matchi::Predicate(have_key, *[:foo], **{}, &nil)"
-
-# It returns the given expected value
-raise unless matcher.expected == [:has_key?, [:foo], {}, nil]
 
 matcher = Matchi::Predicate.new(:be_swimmer, foo: "bar")
 
@@ -63,6 +57,3 @@ raise unless matcher.to_s == 'be swimmer foo: "bar"'
 
 # It returns this representation
 raise unless matcher.inspect == 'Matchi::Predicate(be_swimmer, *[], **{:foo=>"bar"}, &nil)'
-
-# It returns the given expected value
-raise unless matcher.expected == [:swimmer?, [], { foo: "bar" }, nil]

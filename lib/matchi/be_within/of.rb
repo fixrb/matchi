@@ -4,9 +4,6 @@ module Matchi
   class BeWithin
     # *BeWithin of* matcher.
     class Of
-      # @return [Numeric] An expected value.
-      attr_reader :expected
-
       # Initialize the matcher with a delta and an expected value.
       #
       # @example
@@ -28,25 +25,23 @@ module Matchi
       #   require "matchi/be_within/of"
       #
       #   matcher = Matchi::BeWithin::Of.new(1, 41)
-      #
-      #   matcher.expected        # => 41
       #   matcher.matches? { 42 } # => true
       #
       # @yieldreturn [Numeric] The block of code to execute.
       #
       # @return [Boolean] Comparison between the actual and the expected values.
       def matches?
-        (expected - yield).abs <= @delta
+        (@expected - yield).abs <= @delta
       end
 
       # A string containing a human-readable representation of the matcher.
       def inspect
-        "#{self.class}(#{@delta}, #{expected})"
+        "#{self.class}(#{@delta}, #{@expected})"
       end
 
       # Returns a string representing the matcher.
       def to_s
-        "be within #{@delta} of #{expected}"
+        "be within #{@delta} of #{@expected}"
       end
     end
   end

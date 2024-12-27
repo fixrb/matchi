@@ -3,9 +3,6 @@
 module Matchi
   # *Expecting errors* matcher.
   class RaiseException
-    # @return [String] The expected exception name.
-    attr_reader :expected
-
     # Initialize the matcher with a descendant of class Exception.
     #
     # @example
@@ -24,8 +21,6 @@ module Matchi
     #   require "matchi/raise_exception"
     #
     #   matcher = Matchi::RaiseException.new(NameError)
-    #
-    #   matcher.expected          # => "NameError"
     #   matcher.matches? { Boom } # => true
     #
     # @yieldreturn [#object_id] The actual value to compare to the expected
@@ -34,7 +29,7 @@ module Matchi
     # @return [Boolean] Comparison between actual and expected values.
     def matches?
       yield
-    rescue self.class.const_get(expected) => _e
+    rescue self.class.const_get(@expected) => _e
       true
     else
       false
@@ -42,12 +37,12 @@ module Matchi
 
     # A string containing a human-readable representation of the matcher.
     def inspect
-      "#{self.class}(#{expected})"
+      "#{self.class}(#{@expected})"
     end
 
     # Returns a string representing the matcher.
     def to_s
-      "raise exception #{expected}"
+      "raise exception #{@expected}"
     end
   end
 end

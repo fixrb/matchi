@@ -16,6 +16,3 @@ raise unless matcher.to_s == "match /^foo/"
 
 # It returns this representation
 raise unless matcher.inspect == "Matchi::Match(/^foo/)"
-
-# It returns the given expected value
-raise unless matcher.expected == /^foo/

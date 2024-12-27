@@ -25,9 +25,6 @@ raise unless matcher.to_s == "raise exception ZeroDivisionError"
 # It returns this representation
 raise unless matcher.inspect == "Matchi::RaiseException(ZeroDivisionError)"
 
-# It returns the given expected value
-raise unless matcher.expected == "ZeroDivisionError"
-
 # When expected object is a symbol
 matcher = Matchi::RaiseException.new(:ZeroDivisionError)
 
@@ -49,6 +46,3 @@ raise unless matcher.to_s == "raise exception ZeroDivisionError"
 
 # It returns this representation
 raise unless matcher.inspect == "Matchi::RaiseException(ZeroDivisionError)"
-
-# It returns the given expected value
-raise unless matcher.expected == "ZeroDivisionError"

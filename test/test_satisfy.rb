@@ -17,6 +17,3 @@ raise unless matcher.to_s == "satisfy &block"
 
 # It returns this representation
 raise unless matcher.inspect == "Matchi::Satisfy(&block)"
-
-# It returns the given expected value
-raise unless matcher.expected == expected

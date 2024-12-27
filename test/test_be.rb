@@ -16,6 +16,3 @@ raise unless matcher.to_s == "be :foo"
 
 # It returns this representation
 raise unless matcher.inspect == "Matchi::Be(:foo)"
-
-# It returns the given expected value
-raise unless matcher.expected == :foo

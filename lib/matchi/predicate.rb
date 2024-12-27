@@ -24,27 +24,18 @@ module Matchi
       @block  = block
     end
 
-    # @return [Array] The method name with any arguments to send to the subject.
-    def expected
-      [method_name, @args, @kwargs, @block]
-    end
-
     # Boolean comparison between the actual value and the expected value.
     #
     # @example
     #   require "matchi/predicate"
     #
     #   matcher = Matchi::Predicate.new(:be_empty)
-    #
-    #   matcher.expected        # => [:empty?, [], {}, nil]
     #   matcher.matches? { [] } # => true
     #
     # @example
     #   require "matchi/predicate"
     #
     #   matcher = Matchi::Predicate.new(:have_key, :foo)
-    #
-    #   matcher.expected                 # => [:has_key?, [:foo], {}, nil]
     #   matcher.matches? { { foo: 42 } } # => true
     #
     # @yieldreturn [#object_id] The actual value to receive the method request.

@@ -3,9 +3,6 @@
 module Matchi
   # *Satisfy* matcher.
   class Satisfy
-    # @return [Proc] A block of code.
-    attr_reader :expected
-
     # Initialize the matcher with a block.
     #
     # @example
@@ -24,8 +21,6 @@ module Matchi
     #   require "matchi/satisfy"
     #
     #   matcher = Matchi::Satisfy.new { |value| value == 42 }
-    #
-    #   matcher.expected        # => #<Proc:0x00007fbaafc65540>
     #   matcher.matches? { 42 } # => true
     #
     # @yieldreturn [#object_id] The actual value to compare to the expected
@@ -33,7 +28,7 @@ module Matchi
     #
     # @return [Boolean] Comparison between actual and expected values.
     def matches?
-      expected.call(yield)
+      @expected.call(yield)
     end
 
     # A string containing a human-readable representation of the matcher.

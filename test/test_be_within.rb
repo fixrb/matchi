@@ -19,6 +19,3 @@ raise unless matcher.to_s == "be within 1 of 41"
 
 # It returns this representation
 raise unless matcher.inspect == "Matchi::BeWithin::Of(1, 41)"
-
-# It returns the given expected value
-raise unless matcher.expected == 41
