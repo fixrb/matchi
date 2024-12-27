@@ -12,6 +12,8 @@ module Matchi
     #
     # @param block [Proc] A block of code.
     def initialize(&block)
+      raise ::ArgumentError, "a block must be provided" unless block_given?
+
       @expected = block
     end
 
@@ -28,6 +30,8 @@ module Matchi
     #
     # @return [Boolean] Comparison between actual and expected values.
     def match?
+      raise ::ArgumentError, "a block must be provided" unless block_given?
+
       @expected.call(yield)
     end
 

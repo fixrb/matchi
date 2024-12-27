@@ -12,7 +12,7 @@ module Matchi
     #
     # @param expected [Class, #to_s] The expected class name.
     def initialize(expected)
-      @expected = String(expected)
+      @expected = self.class.const_get(String(expected))
     end
 
     # Boolean comparison between the class of the actual value and the
@@ -28,7 +28,9 @@ module Matchi
     #
     # @return [Boolean] Comparison between actual and expected values.
     def match?
-      self.class.const_get(@expected).equal?(yield.class)
+      raise ::ArgumentError, "a block must be provided" unless block_given?
+
+      @expected === yield # rubocop:disable Style/CaseEquality
     end
 
     # A string containing a human-readable representation of the matcher.

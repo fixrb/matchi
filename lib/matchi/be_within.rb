@@ -14,6 +14,9 @@ module Matchi
     #
     # @param delta [Numeric] A numeric value.
     def initialize(delta)
+      raise ::ArgumentError, "delta must be a Numeric" unless delta.is_a?(::Numeric)
+      raise ::ArgumentError, "delta must be non-negative" if delta.negative?
+
       @delta = delta
     end
 

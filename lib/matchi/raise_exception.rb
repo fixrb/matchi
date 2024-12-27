@@ -12,7 +12,7 @@ module Matchi
     #
     # @param expected [Exception, #to_s] The expected exception name.
     def initialize(expected)
-      @expected = String(expected)
+      @expected = self.class.const_get(String(expected))
     end
 
     # Boolean comparison between the actual value and the expected value.
@@ -28,8 +28,10 @@ module Matchi
     #
     # @return [Boolean] Comparison between actual and expected values.
     def match?
+      raise ::ArgumentError, "a block must be provided" unless block_given?
+
       yield
-    rescue self.class.const_get(@expected) => _e
+    rescue @expected => _e
       true
     else
       false

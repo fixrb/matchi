@@ -14,6 +14,10 @@ module Matchi
       # @param delta    [Numeric] The accepted variation of the actual value.
       # @param expected [Numeric] The expected value.
       def initialize(delta, expected)
+        raise ::ArgumentError, "delta must be a Numeric" unless delta.is_a?(::Numeric)
+        raise ::ArgumentError, "expected must be a Numeric" unless expected.is_a?(::Numeric)
+        raise ::ArgumentError, "delta must be non-negative" if delta.negative?
+
         @delta    = delta
         @expected = expected
       end
@@ -31,6 +35,8 @@ module Matchi
       #
       # @return [Boolean] Comparison between the actual and the expected values.
       def match?
+        raise ::ArgumentError, "a block must be provided" unless block_given?
+
         (@expected - yield).abs <= @delta
       end
 

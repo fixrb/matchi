@@ -12,6 +12,8 @@ module Matchi
     #
     # @param expected [#match] A regular expression.
     def initialize(expected)
+      raise ::ArgumentError, "expected must respond to match?" unless expected.respond_to?(:match?)
+
       @expected = expected
     end
 
@@ -28,6 +30,8 @@ module Matchi
     #
     # @return [Boolean] Comparison between actual and expected values.
     def match?
+      raise ::ArgumentError, "a block must be provided" unless block_given?
+
       @expected.match?(yield)
     end
 

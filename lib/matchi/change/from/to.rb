@@ -19,6 +19,8 @@ module Matchi
         # @param state              [Proc]       A block of code to execute to
         #   get the state of the object.
         def initialize(expected_init, expected_new_value, &state)
+          raise ::ArgumentError, "a block must be provided" unless block_given?
+
           @expected_init  = expected_init
           @expected       = expected_new_value
           @state          = state
@@ -40,6 +42,8 @@ module Matchi
         # @return [Boolean] Comparison between the value before and after the
         #   code execution.
         def match?
+          raise ::ArgumentError, "a block must be provided" unless block_given?
+
           value_before = @state.call
           return false unless @expected_init == value_before
 

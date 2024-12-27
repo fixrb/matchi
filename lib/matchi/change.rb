@@ -20,6 +20,9 @@ module Matchi
     # @param object [#object_id]  An object.
     # @param method [Symbol]      The name of a method.
     def initialize(object, method, ...)
+      raise ::ArgumentError, "method must be a Symbol" unless method.is_a?(::Symbol)
+      raise ::ArgumentError, "object must respond to method" unless object.respond_to?(method)
+
       @state = -> { object.send(method, ...) }
     end
 

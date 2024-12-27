@@ -16,8 +16,7 @@ module Matchi
     # @param block  [Proc]  A block of code.
     def initialize(name, *args, **kwargs, &block)
       @name = String(name)
-
-      raise ::ArgumentError unless valid_name?
+      raise ::ArgumentError, "invalid predicate name format" unless valid_name?
 
       @args   = args
       @kwargs = kwargs
@@ -42,6 +41,8 @@ module Matchi
     #
     # @return [Boolean] A boolean returned by the actual value being tested.
     def match?
+      raise ::ArgumentError, "a block must be provided" unless block_given?
+
       value = yield.send(method_name, *@args, **@kwargs, &@block)
       return value if [false, true].include?(value)
 

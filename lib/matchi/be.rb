@@ -28,6 +28,8 @@ module Matchi
     #
     # @return [Boolean] Comparison between actual and expected values.
     def match?
+      raise ::ArgumentError, "a block must be provided" unless block_given?
+
       @expected.equal?(yield)
     end
 
