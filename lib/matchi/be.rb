@@ -21,13 +21,13 @@ module Matchi
     #   require "matchi/be"
     #
     #   matcher = Matchi::Be.new(:foo)
-    #   matcher.matches? { :foo } # => true
+    #   matcher.match? { :foo } # => true
     #
     # @yieldreturn [#object_id] The actual value to compare to the expected
     #   one.
     #
     # @return [Boolean] Comparison between actual and expected values.
-    def matches?
+    def match?
       @expected.equal?(yield)
     end
 

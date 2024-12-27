@@ -6,10 +6,10 @@ require_relative File.join("..", "lib", "matchi", "predicate")
 matcher = Matchi::Predicate.new("be_empty")
 
 # It is expected to be true
-raise unless matcher.matches? { [] }
+raise unless matcher.match? { [] }
 
 # It is expected to be false
-raise if matcher.matches? { [4, 9] }
+raise if matcher.match? { [4, 9] }
 
 # It returns this string
 raise unless matcher.to_s == "be empty"
@@ -20,10 +20,10 @@ raise unless matcher.inspect == "Matchi::Predicate(be_empty, *[], **{}, &nil)"
 matcher = Matchi::Predicate.new("have_key", :foo)
 
 # It is expected to be true
-raise unless matcher.matches? { { foo: 42 } }
+raise unless matcher.match? { { foo: 42 } }
 
 # It is expected to be false
-raise if matcher.matches? { { bar: 4 } }
+raise if matcher.match? { { bar: 4 } }
 
 # It returns this string
 raise unless matcher.to_s == "have key :foo"
@@ -40,7 +40,7 @@ class Duck
 end
 
 # It is expected to be true
-raise unless matcher.matches? { Duck.new }
+raise unless matcher.match? { Duck.new }
 
 class Rhinoceros
   def swimmer?(**_options)
@@ -49,7 +49,7 @@ class Rhinoceros
 end
 
 # It is expected to be false
-raise if matcher.matches? { Rhinoceros.new }
+raise if matcher.match? { Rhinoceros.new }
 
 # It returns this string
 

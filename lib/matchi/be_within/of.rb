@@ -25,12 +25,12 @@ module Matchi
       #   require "matchi/be_within/of"
       #
       #   matcher = Matchi::BeWithin::Of.new(1, 41)
-      #   matcher.matches? { 42 } # => true
+      #   matcher.match? { 42 } # => true
       #
       # @yieldreturn [Numeric] The block of code to execute.
       #
       # @return [Boolean] Comparison between the actual and the expected values.
-      def matches?
+      def match?
         (@expected - yield).abs <= @delta
       end
 

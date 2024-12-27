@@ -35,7 +35,7 @@ module Matchi
       #
       # @param expected_new_value [#object_id] The new value to expect.
       #
-      # @return [#matches?] A *change from to* matcher.
+      # @return [#match?] A *change from to* matcher.
       def to(expected_new_value)
         To.new(@expected, expected_new_value, &@state)
       end

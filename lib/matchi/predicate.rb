@@ -30,18 +30,18 @@ module Matchi
     #   require "matchi/predicate"
     #
     #   matcher = Matchi::Predicate.new(:be_empty)
-    #   matcher.matches? { [] } # => true
+    #   matcher.match? { [] } # => true
     #
     # @example
     #   require "matchi/predicate"
     #
     #   matcher = Matchi::Predicate.new(:have_key, :foo)
-    #   matcher.matches? { { foo: 42 } } # => true
+    #   matcher.match? { { foo: 42 } } # => true
     #
     # @yieldreturn [#object_id] The actual value to receive the method request.
     #
     # @return [Boolean] A boolean returned by the actual value being tested.
-    def matches?
+    def match?
       value = yield.send(method_name, *@args, **@kwargs, &@block)
       return value if [false, true].include?(value)
 

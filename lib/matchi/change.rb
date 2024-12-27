@@ -35,7 +35,7 @@ module Matchi
     #
     # @param minimum_delta [#object_id] The minimum delta of the expected change.
     #
-    # @return [#matches?] A *change by at least* matcher.
+    # @return [#match?] A *change by at least* matcher.
     def by_at_least(minimum_delta)
       ByAtLeast.new(minimum_delta, &@state)
     end
@@ -52,7 +52,7 @@ module Matchi
     #
     # @param maximum_delta [#object_id] The maximum delta of the expected change.
     #
-    # @return [#matches?] A *change by at most* matcher.
+    # @return [#match?] A *change by at most* matcher.
     def by_at_most(maximum_delta)
       ByAtMost.new(maximum_delta, &@state)
     end
@@ -69,7 +69,7 @@ module Matchi
     #
     # @param delta [#object_id] The delta of the expected change.
     #
-    # @return [#matches?] A *change by* matcher.
+    # @return [#match?] A *change by* matcher.
     def by(delta)
       By.new(delta, &@state)
     end
@@ -84,7 +84,7 @@ module Matchi
     #
     # @param old_value [#object_id] The original value.
     #
-    # @return [#matches?] A *change from* wrapper.
+    # @return [#match?] A *change from* wrapper.
     def from(old_value)
       From.new(old_value, &@state)
     end
@@ -99,7 +99,7 @@ module Matchi
     #
     # @param new_value [#object_id] The new value to expect.
     #
-    # @return [#matches?] A *change to* matcher.
+    # @return [#match?] A *change to* matcher.
     def to(new_value)
       To.new(new_value, &@state)
     end

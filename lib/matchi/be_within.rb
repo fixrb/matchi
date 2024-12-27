@@ -27,7 +27,7 @@ module Matchi
     #
     # @param expected [Numeric] The expected value.
     #
-    # @return [#matches?] A *be_within of* matcher.
+    # @return [#match?] A *be_within of* matcher.
     def of(expected)
       Of.new(@delta, expected)
     end

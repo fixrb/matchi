@@ -52,7 +52,7 @@ All examples here assume that this has been done.
 
 ### Anatomy of a matcher
 
-A __Matchi__ matcher is an object that must respond to the `matches?` method with a block as argument, and return a boolean.
+A __Matchi__ matcher is an object that must respond to the `match?` method with a block as argument, and return a boolean.
 
 To facilitate the integration of the matchers in other tools, __Matchi__ matchers may also respond to `to_s` method.
 
@@ -64,52 +64,52 @@ Here is the collection of useful generic matchers.
 
 ```ruby
 matcher = Matchi::Eq.new("foo")
-matcher.matches? { "foo" } # => true
+matcher.match? { "foo" } # => true
 ```
 
 **Identity** matcher:
 
 ```ruby
 matcher = Matchi::Be.new(:foo)
-matcher.matches? { :foo } # => true
+matcher.match? { :foo } # => true
 ```
 
 **Comparisons** matcher:
 
 ```ruby
 matcher = Matchi::BeWithin.new(8).of(37)
-matcher.matches? { 42 } # => true
+matcher.match? { 42 } # => true
 ```
 
 **Regular expressions** matcher:
 
 ```ruby
 matcher = Matchi::Match.new(/^foo$/)
-matcher.matches? { "foo" } # => true
+matcher.match? { "foo" } # => true
 ```
 
 **Expecting errors** matcher:
 
 ```ruby
 matcher = Matchi::RaiseException.new(:NameError)
-matcher.matches? { Boom } # => true
+matcher.match? { Boom } # => true
 ```
 
 **Type/class** matcher:
 
 ```ruby
 matcher = Matchi::BeAnInstanceOf.new(:String)
-matcher.matches? { "foo" } # => true
+matcher.match? { "foo" } # => true
 ```
 
 **Predicate** matcher:
 
 ```ruby
 matcher = Matchi::Predicate.new(:be_empty)
-matcher.matches? { [] } # => true
+matcher.match? { [] } # => true
 
 matcher = Matchi::Predicate.new(:have_key, :foo)
-matcher.matches? { { foo: 42 } } # => true
+matcher.match? { { foo: 42 } } # => true
 ```
 
 **Change** matcher:
@@ -117,30 +117,30 @@ matcher.matches? { { foo: 42 } } # => true
 ```ruby
 object = []
 matcher = Matchi::Change.new(object, :length).by(1)
-matcher.matches? { object << 1 } # => true
+matcher.match? { object << 1 } # => true
 
 object = []
 matcher = Matchi::Change.new(object, :length).by_at_least(1)
-matcher.matches? { object << 1 } # => true
+matcher.match? { object << 1 } # => true
 
 object = []
 matcher = Matchi::Change.new(object, :length).by_at_most(1)
-matcher.matches? { object << 1 } # => true
+matcher.match? { object << 1 } # => true
 
 object = "foo"
 matcher = Matchi::Change.new(object, :to_s).from("foo").to("FOO")
-matcher.matches? { object.upcase! } # => true
+matcher.match? { object.upcase! } # => true
 
 object = "foo"
 matcher = Matchi::Change.new(object, :to_s).to("FOO")
-matcher.matches? { object.upcase! } # => true
+matcher.match? { object.upcase! } # => true
 ```
 
 **Satisfy** matcher:
 
 ```ruby
 matcher = Matchi::Satisfy.new { |value| value == 42 }
-matcher.matches? { 42 } # => true
+matcher.match? { 42 } # => true
 ```
 
 ### Custom matchers
@@ -152,7 +152,7 @@ A **Be the answer** matcher:
 ```ruby
 module Matchi
   class BeTheAnswer
-    def matches?
+    def match?
       expected.equal?(yield)
     end
 
@@ -165,7 +165,7 @@ module Matchi
 end
 
 matcher = Matchi::BeTheAnswer.new
-matcher.matches? { 42 } # => true
+matcher.match? { 42 } # => true
 ```
 
 A **Be prime** matcher:
@@ -175,7 +175,7 @@ require "prime"
 
 module Matchi
   class BePrime
-    def matches?
+    def match?
       Prime.prime?(yield)
     end
   end
@@ -183,7 +183,7 @@ end
 
 matcher = Matchi::BePrime.new
 
-matcher.matches? { 42 } # => false
+matcher.match? { 42 } # => false
 ```
 
 A **Start with** matcher:
@@ -195,14 +195,14 @@ module Matchi
       @expected = expected
     end
 
-    def matches?
+    def match?
       /\A#{@expected}/.match?(yield)
     end
   end
 end
 
 matcher = Matchi::StartWith.new("foo")
-matcher.matches? { "foobar" } # => true
+matcher.match? { "foobar" } # => true
 ```
 
 ## Contact

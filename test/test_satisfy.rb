@@ -7,10 +7,10 @@ expected = ->(value) { value == 42 }
 matcher = Matchi::Satisfy.new(&expected)
 
 # It is expected to be true
-raise unless matcher.matches? { 42 }
+raise unless matcher.match? { 42 }
 
 # It is expected to be false
-raise if matcher.matches? { :boom }
+raise if matcher.match? { :boom }
 
 # It returns this string
 raise unless matcher.to_s == "satisfy &block"

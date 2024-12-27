@@ -6,10 +6,10 @@ require_relative File.join("..", "lib", "matchi", "eq")
 matcher = Matchi::Eq.new("foo")
 
 # It is expected to be true
-raise unless matcher.matches? { "foo" }
+raise unless matcher.match? { "foo" }
 
 # It is expected to be false
-raise if matcher.matches? { "bar" }
+raise if matcher.match? { "bar" }
 
 # It returns this string
 raise unless matcher.to_s == 'eq "foo"'

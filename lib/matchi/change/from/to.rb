@@ -33,13 +33,13 @@ module Matchi
         #   object = "foo"
         #
         #   matcher = Matchi::Change::From::To.new("foo", "FOO") { object.to_s }
-        #   matcher.matches? { object.upcase! } # => true
+        #   matcher.match? { object.upcase! } # => true
         #
         # @yieldreturn [#object_id] The block of code to execute.
         #
         # @return [Boolean] Comparison between the value before and after the
         #   code execution.
-        def matches?
+        def match?
           value_before = @state.call
           return false unless @expected_init == value_before
 

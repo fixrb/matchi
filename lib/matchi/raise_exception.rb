@@ -21,13 +21,13 @@ module Matchi
     #   require "matchi/raise_exception"
     #
     #   matcher = Matchi::RaiseException.new(NameError)
-    #   matcher.matches? { Boom } # => true
+    #   matcher.match? { Boom } # => true
     #
     # @yieldreturn [#object_id] The actual value to compare to the expected
     #   one.
     #
     # @return [Boolean] Comparison between actual and expected values.
-    def matches?
+    def match?
       yield
     rescue self.class.const_get(@expected) => _e
       true

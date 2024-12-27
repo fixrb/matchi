@@ -30,13 +30,13 @@ module Matchi
       #   object = []
       #
       #   matcher = Matchi::Change::ByAtLeast.new(1) { object.length }
-      #   matcher.matches? { object << "foo" } # => true
+      #   matcher.match? { object << "foo" } # => true
       #
       # @yieldreturn [#object_id] The block of code to execute.
       #
       # @return [Boolean] Comparison between the value before and after the
       #   code execution.
-      def matches?
+      def match?
         value_before = @state.call
         yield
         value_after = @state.call

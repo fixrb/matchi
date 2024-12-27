@@ -22,12 +22,12 @@ module Matchi
     #   require "matchi/be_an_instance_of"
     #
     #   matcher = Matchi::BeAnInstanceOf.new(String)
-    #   matcher.matches? { "foo" } # => true
+    #   matcher.match? { "foo" } # => true
     #
     # @yieldreturn [#class] the actual value to compare to the expected one.
     #
     # @return [Boolean] Comparison between actual and expected values.
-    def matches?
+    def match?
       self.class.const_get(@expected).equal?(yield.class)
     end
 

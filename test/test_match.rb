@@ -6,10 +6,10 @@ require_relative File.join("..", "lib", "matchi", "match")
 matcher = Matchi::Match.new(/^foo/)
 
 # It is expected to be true
-raise unless matcher.matches? { "foobar" }
+raise unless matcher.match? { "foobar" }
 
 # It is expected to be false
-raise if matcher.matches? { "bar" }
+raise if matcher.match? { "bar" }
 
 # It returns this string
 raise unless matcher.to_s == "match /^foo/"

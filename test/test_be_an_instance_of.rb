@@ -7,10 +7,10 @@ require_relative File.join("..", "lib", "matchi", "be_an_instance_of")
 matcher = Matchi::BeAnInstanceOf.new(Symbol)
 
 # It is expected to be true
-raise unless matcher.matches? { :foo }
+raise unless matcher.match? { :foo }
 
 # It is expected to be false
-raise if matcher.matches? { "boom" }
+raise if matcher.match? { "boom" }
 
 # It returns this string
 raise unless matcher.to_s == "be an instance of Symbol"
@@ -22,10 +22,10 @@ raise unless matcher.inspect == "Matchi::BeAnInstanceOf(Symbol)"
 matcher = Matchi::BeAnInstanceOf.new(:Symbol)
 
 # It is expected to be true
-raise unless matcher.matches? { :foo }
+raise unless matcher.match? { :foo }
 
 # It is expected to be false
-raise if matcher.matches? { "boom" }
+raise if matcher.match? { "boom" }
 
 # It returns this string
 raise unless matcher.to_s == "be an instance of Symbol"

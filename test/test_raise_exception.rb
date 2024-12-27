@@ -7,14 +7,14 @@ require_relative File.join("..", "lib", "matchi", "raise_exception")
 matcher = Matchi::RaiseException.new(ZeroDivisionError)
 
 # It is expected to be true
-raise unless matcher.matches? { raise ZeroDivisionError }
+raise unless matcher.match? { raise ZeroDivisionError }
 
 # It is expected to be false
-raise if matcher.matches? { "bar" }
+raise if matcher.match? { "bar" }
 
 # It is expected to raise
 begin
-  matcher.matches? { Matchi::BOOM } && raise
+  matcher.match? { Matchi::BOOM } && raise
 rescue NameError
   true
 end
@@ -29,14 +29,14 @@ raise unless matcher.inspect == "Matchi::RaiseException(ZeroDivisionError)"
 matcher = Matchi::RaiseException.new(:ZeroDivisionError)
 
 # It is expected to be true
-raise unless matcher.matches? { raise ZeroDivisionError }
+raise unless matcher.match? { raise ZeroDivisionError }
 
 # It is expected to be false
-raise if matcher.matches? { "bar" }
+raise if matcher.match? { "bar" }
 
 # It is expected to raise
 begin
-  matcher.matches? { Matchi::BOOM } && raise
+  matcher.match? { Matchi::BOOM } && raise
 rescue NameError
   true
 end
