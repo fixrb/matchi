@@ -19,8 +19,6 @@ module Matchi
     #
     # @param object [#object_id]  An object.
     # @param method [Symbol]      The name of a method.
-    # @param args   [Array]       A list of arguments.
-    # @param kwargs [Hash]        A list of keyword arguments.
     def initialize(object, method, ...)
       @state = -> { object.send(method, ...) }
     end
