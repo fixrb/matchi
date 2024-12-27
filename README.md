@@ -52,9 +52,16 @@ All examples here assume that this has been done.
 
 ### Anatomy of a matcher
 
-A __Matchi__ matcher is an object that must respond to the `match?` method with a block as argument, and return a boolean.
+A **Matchi** matcher is a simple Ruby object that follows these requirements:
 
-To facilitate the integration of the matchers in other tools, __Matchi__ matchers may also respond to `to_s` method.
+1. It must implement a `match?` method that:
+   - Accepts a block as its only parameter
+   - Executes that block to get the actual value
+   - Returns a boolean indicating if the actual value matches the expected criteria
+
+2. Optionally, it may implement:
+   - `to_s`: Returns a human-readable description of the match criteria
+   - `inspect`: Returns a detailed representation of the matcher state
 
 ### Built-in matchers
 
