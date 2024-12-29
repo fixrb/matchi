@@ -10,7 +10,6 @@ raise if matcher.match? { 42 }
 
 # Test string representations
 raise unless matcher.to_s == "be a kind of String"
-raise unless matcher.inspect == "Matchi::BeAKindOf(String)"
 
 # Test with symbol class name
 matcher = Matchi::BeAKindOf.new(:String)

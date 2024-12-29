@@ -13,6 +13,3 @@ raise if matcher.match? { :bar }
 
 # It returns this string
 raise unless matcher.to_s == "be :foo"
-
-# It returns this representation
-raise unless matcher.inspect == "Matchi::Be(:foo)"

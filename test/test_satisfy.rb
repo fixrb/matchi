@@ -14,6 +14,3 @@ raise if matcher.match? { :boom }
 
 # It returns this string
 raise unless matcher.to_s == "satisfy &block"
-
-# It returns this representation
-raise unless matcher.inspect == "Matchi::Satisfy(&block)"

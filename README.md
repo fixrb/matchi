@@ -72,15 +72,15 @@ Here is the collection of generic matchers.
 ##### `Be`
 Checks for object identity using Ruby's `equal?` method.
 ```ruby
-Matchi::Be.new(:foo).match? { :foo }  # => true (same object)
-Matchi::Be.new("test").match? { "test" }  # => false (different objects)
+Matchi::Be.new(:foo).match? { :foo } # => true (same object)
+Matchi::Be.new("test").match? { "test" } # => false (different objects)
 ```
 
 ##### `Eq`
 Verifies object equivalence using Ruby's `eql?` method.
 ```ruby
-Matchi::Eq.new("foo").match? { "foo" }  # => true (equivalent content)
-Matchi::Eq.new([1, 2]).match? { [1, 2] }  # => true (equivalent arrays)
+Matchi::Eq.new("foo").match? { "foo" } # => true (equivalent content)
+Matchi::Eq.new([1, 2]).match? { [1, 2] } # => true (equivalent arrays)
 ```
 
 #### Type and Class Matchers
@@ -113,8 +113,8 @@ Matchi::Match.new(/^foo/).match? { "barfoo" }  # => false
 ##### `Satisfy`
 Provides custom matching through a block.
 ```ruby
-Matchi::Satisfy.new { |x| x > 0 && x < 10 }.match? { 5 }  # => true
-Matchi::Satisfy.new { |x| x.start_with?("test") }.match? { "test_file" }  # => true
+Matchi::Satisfy.new { |x| x.positive? && x < 10 }.match? { 5 } # => true
+Matchi::Satisfy.new { |x| x.start_with?("test") }.match? { "test_file" } # => true
 ```
 
 #### State Change Matchers
@@ -125,31 +125,31 @@ Verifies state changes in objects with multiple variation methods:
 ###### Basic Change
 ```ruby
 array = []
-Matchi::Change.new(array, :length).by(2).match? { array.push(1, 2) }  # => true
+Matchi::Change.new(array, :length).by(2).match? { array.push(1, 2) } # => true
 ```
 
 ###### Minimum Change
 ```ruby
 counter = 0
-Matchi::Change.new(counter, :to_i).by_at_least(2).match? { counter += 3 }  # => true
+Matchi::Change.new(counter, :to_i).by_at_least(2).match? { counter += 3 } # => true
 ```
 
 ###### Maximum Change
 ```ruby
 value = 10
-Matchi::Change.new(value, :to_i).by_at_most(5).match? { value += 3 }  # => true
+Matchi::Change.new(value, :to_i).by_at_most(5).match? { value += 3 } # => true
 ```
 
 ###### From-To Change
 ```ruby
 string = "hello"
-Matchi::Change.new(string, :upcase).from("hello").to("HELLO").match? { string.upcase! }  # => true
+Matchi::Change.new(string, :upcase).from("hello").to("HELLO").match? { string.upcase! } # => true
 ```
 
 ###### To-Only Change
 ```ruby
 number = 1
-Matchi::Change.new(number, :to_i).to(5).match? { number = 5 }  # => true
+Matchi::Change.new(number, :to_i).to(5).match? { number = 5 } # => true
 ```
 
 #### Numeric Matchers
@@ -166,8 +166,8 @@ Matchi::BeWithin.new(5).of(100).match? { 98 }     # => true
 ##### `RaiseException`
 Verifies that code raises specific exceptions.
 ```ruby
-Matchi::RaiseException.new(ArgumentError).match? { raise ArgumentError }  # => true
-Matchi::RaiseException.new(NameError).match? { undefined_variable }      # => true
+Matchi::RaiseException.new(ArgumentError).match? { raise ArgumentError } # => true
+Matchi::RaiseException.new(NameError).match? { undefined_variable } # => true
 ```
 
 ##### `Predicate`
@@ -181,7 +181,7 @@ Matchi::Predicate.new(:be_nil).match? { nil }   # => true (calls nil?)
 
 ###### Using `have_` prefix
 ```ruby
-Matchi::Predicate.new(:have_key, :foo).match? { { foo: 42 } }  # => true (calls has_key?)
+Matchi::Predicate.new(:have_key, :foo).match? { { foo: 42 } } # => true (calls has_key?)
 ```
 
 ### Custom matchers
@@ -288,7 +288,7 @@ This is why Matchi's built-in matchers are implemented with this security consid
 ```ruby
 # Implementation in Matchi::Eq
 def match?
-  @expected.eql?(yield)  # Expected value controls the comparison
+  @expected.eql?(yield) # Expected value controls the comparison
 end
 ```
 

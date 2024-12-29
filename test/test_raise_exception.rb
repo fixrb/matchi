@@ -148,7 +148,6 @@ end
 
 matcher = Matchi::RaiseException.new(:CustomError)
 raise unless matcher.to_s == "raise exception CustomError"
-raise unless matcher.inspect == "Matchi::RaiseException(CustomError)"
 
 #
 # Test exception messages

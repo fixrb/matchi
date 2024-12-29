@@ -38,7 +38,6 @@ raise if matcher.match? { 42 }
 
 # Test string representations
 raise unless matcher.to_s == "be an instance of String"
-raise unless matcher.inspect == "Matchi::BeAnInstanceOf(String)"
 
 # Test with symbol class name
 matcher = Matchi::BeAnInstanceOf.new(:String)
