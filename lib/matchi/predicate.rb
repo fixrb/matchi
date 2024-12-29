@@ -49,12 +49,9 @@ module Matchi
       raise ::TypeError, "Boolean expected, but #{value.class} instance returned."
     end
 
-    # A string containing a human-readable representation of the matcher.
-    def inspect
-      "#{self.class}(#{@name}, *#{@args.inspect}, **#{@kwargs.inspect}, &#{@block.inspect})"
-    end
-
     # Returns a string representing the matcher.
+    #
+    # @return [String] a human-readable description of the matcher
     def to_s
       (
         "#{@name.tr("_", " ")} " + [

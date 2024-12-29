@@ -47,12 +47,9 @@ module Matchi
         @expected == value_after
       end
 
-      # A string containing a human-readable representation of the matcher.
-      def inspect
-        "#{self.class}(#{@expected.inspect})"
-      end
-
       # Returns a string representing the matcher.
+      #
+      # @return [String] a human-readable description of the matcher
       def to_s
         "change to #{@expected.inspect}"
       end
