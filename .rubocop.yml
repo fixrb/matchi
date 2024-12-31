@@ -1,6 +1,9 @@
 AllCops:
   NewCops: enable
   TargetRubyVersion: 3.2
+  Exclude:
+    - 'test/**/*'
+    - 'test/*'
 
 require:
   - rubocop-md

@@ -63,6 +63,67 @@ A **Matchi** matcher is a simple Ruby object that follows these requirements:
 2. Optionally, it may implement:
    - `to_s`: Returns a human-readable description of the match criteria
 
+### Using Matchers
+
+There are two main ways to use Matchi matchers:
+
+#### 1. Direct Class Instantiation
+
+You can create matchers directly from their classes:
+
+```ruby
+matcher = Matchi::Eq.new("foo")
+matcher.match? { "foo" } # => true
+
+matcher = Matchi::BeWithin.new(0.5).of(3.0)
+matcher.match? { 3.2 } # => true
+```
+
+#### 2. Helper Methods via Module Inclusion
+
+For a more expressive and readable syntax, you can include or extend the `Matchi` module to get access to helper methods:
+
+```ruby
+# Including in a class for instance methods
+class MyTestFramework
+  include Matchi
+
+  def test_equality
+    # Helper methods available as instance methods
+    matcher = eq("foo")
+    assert(matcher.match? { "foo" })
+
+    # Method chaining works too
+    assert(change(@array, :length).by(1).match? { @array << 1 })
+  end
+end
+
+# Extending a class for class methods
+class MyAssertions
+  extend Matchi
+
+  def self.assert_equals(expected, actual)
+    eq(expected).match? { actual }
+  end
+
+  def self.assert_within_range(expected, delta, actual)
+    be_within(delta).of(expected).match? { actual }
+  end
+end
+```
+
+Available helper methods correspond to the built-in matchers:
+- `eq` / `eql` - For equivalence matching
+- `be` / `equal` - For identity matching
+- `be_within` - For delta comparisons
+- `match` - For regular expression matching
+- `change` - For state changes
+- `be_true`, `be_false`, `be_nil` - For state verification
+- `be_an_instance_of` - For exact type matching
+- `be_a_kind_of` - For type hierarchy matching
+- `satisfy` - For custom block-based matching
+- Dynamic predicate matchers (`be_*` and `have_*`)
+
 ### Built-in matchers
 
 Here is the collection of generic matchers.
