@@ -2,4 +2,7 @@
 
 require "simplecov"
 
-SimpleCov.start
+SimpleCov.start do
+  # Add filter to ignore the test directory
+  add_filter "/test/"
+end

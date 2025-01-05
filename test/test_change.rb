@@ -3,6 +3,60 @@
 require_relative File.join("support", "coverage")
 require_relative File.join("..", "lib", "matchi", "change")
 
+# Test basic Change#match? behavior
+object = []
+matcher = Matchi::Change.new(object, :length)
+
+# Test when there is no change
+raise if matcher.match? { object }
+
+# Test when there is a change
+raise unless matcher.match? { object << "foo" }
+
+# Test that match? requires a block
+begin
+  matcher.match?
+  raise "Expected ArgumentError for missing block"
+rescue ArgumentError => e
+  raise unless e.message == "a block must be provided"
+end
+
+# Test Change#to_s
+object = []
+matcher = Matchi::Change.new(object, :length)
+raise unless matcher.to_s.include?("change")
+
+# Test with method arguments
+array = [1, 2, 3]
+matcher = Matchi::Change.new(array, :fetch, 0)
+raise unless matcher.match? { array[0] = 42 }
+
+# Test with keyword arguments
+hash = { key: "old" }
+matcher = Matchi::Change.new(hash, :fetch, :key, default: "none")
+raise unless matcher.match? { hash[:key] = "new" }
+
+# Test that match? detects when value doesn't change
+counter = 42
+matcher = Matchi::Change.new(counter, :to_i)
+raise if matcher.match? { counter = 42 } # rubocop:disable Lint/LiteralAssignmentInCondition
+
+# Test when method doesn't exist
+begin
+  Matchi::Change.new([], :nonexistent_method)
+  raise "Expected ArgumentError for nonexistent method"
+rescue ArgumentError => e
+  raise unless e.message == "object must respond to method"
+end
+
+# Test that method argument must be a symbol
+begin
+  Matchi::Change.new([], "length")
+  raise "Expected ArgumentError for non-symbol method"
+rescue ArgumentError => e
+  raise unless e.message == "method must be a Symbol"
+end
+
 object = []
 matcher = Matchi::Change.new(object, :length).by(2)
 

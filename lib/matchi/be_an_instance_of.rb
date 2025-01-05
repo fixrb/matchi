@@ -1,62 +1,71 @@
 # frozen_string_literal: true
 
 module Matchi
-  # *Type/class* matcher with enhanced class checking.
+  # Type matcher that checks if an object is an exact instance of a specific class.
   #
-  # This matcher aims to provide a more reliable way to check if an object is an exact
-  # instance of a specific class (not a subclass). While not foolproof, it uses a more
-  # robust method to get the actual class of an object that helps resist common
-  # attempts at type checking manipulation.
+  # This matcher provides a secure way to verify an object's exact type, ensuring it
+  # matches a specific class without including subclasses. It uses Ruby's method binding
+  # mechanism to bypass potential method overrides, providing better protection against
+  # type check spoofing than standard instance_of? checks.
   #
   # @example Basic usage
-  #   require "matchi/be_an_instance_of"
-  #
   #   matcher = Matchi::BeAnInstanceOf.new(String)
-  #   matcher.match? { "foo" }  # => true
-  #   matcher.match? { :foo }   # => false
+  #   matcher.match? { "test" }      # => true
+  #   matcher.match? { :test }       # => false
   #
-  # @example Enhanced class checking in practice
-  #   # Consider a class that attempts to masquerade as String by overriding
-  #   # common type checking methods:
+  # @example Inheritance behavior
+  #   class Animal; end
+  #   class Dog < Animal; end
+  #
+  #   matcher = Matchi::BeAnInstanceOf.new(Animal)
+  #   matcher.match? { Animal.new }  # => true
+  #   matcher.match? { Dog.new }     # => false  # Subclass doesn't match
+  #
+  # @example Secure type checking
+  #   # Consider a class that attempts to masquerade as String:
   #   class MaliciousString
-  #     def class
-  #       ::String
-  #     end
-  #
-  #     def instance_of?(klass)
-  #       self.class == klass
-  #     end
-  #
-  #     def is_a?(klass)
-  #       "".is_a?(klass)  # Delegates to a real String
-  #     end
-  #
-  #     def kind_of?(klass)
-  #       is_a?(klass)     # Maintains Ruby's kind_of? alias for is_a?
-  #     end
+  #     def class; String; end
+  #     def instance_of?(klass); true; end
   #   end
   #
   #   obj = MaliciousString.new
-  #   obj.class                                             # => String
-  #   obj.is_a?(String)                                     # => true
-  #   obj.kind_of?(String)                                  # => true
-  #   obj.instance_of?(String)                              # => true
+  #   obj.instance_of?(String)                           # => true (spoofed)
   #
-  #   # Using our enhanced checking approach:
   #   matcher = Matchi::BeAnInstanceOf.new(String)
-  #   matcher.match? { obj }                                # => false
+  #   matcher.match? { obj }                             # => false (secure)
+  #
+  # @example Different ways to specify the class
+  #   # Using class directly
+  #   Matchi::BeAnInstanceOf.new(String)
+  #
+  #   # Using class name as string
+  #   Matchi::BeAnInstanceOf.new("String")
+  #
+  #   # Using class name as symbol
+  #   Matchi::BeAnInstanceOf.new(:String)
+  #
+  #   # Using namespaced class
+  #   Matchi::BeAnInstanceOf.new("MyModule::MyClass")
+  #
+  # @see Matchi::BeAKindOf
+  # @see https://ruby-doc.org/core/Object.html#method-i-instance_of-3F
+  # @see https://ruby-doc.org/core/Module.html#method-i-bind_call
   class BeAnInstanceOf
     # Initialize the matcher with (the name of) a class or module.
     #
-    # @example
-    #   require "matchi/be_an_instance_of"
+    # @api public
     #
-    #   Matchi::BeAnInstanceOf.new(String)
-    #   Matchi::BeAnInstanceOf.new("String")
-    #   Matchi::BeAnInstanceOf.new(:String)
+    # @param expected [Class, #to_s] The expected class or its name
+    #   Can be provided as a Class object, String, or Symbol
     #
-    # @param expected [Class, #to_s] The expected class name
     # @raise [ArgumentError] if the class name doesn't start with an uppercase letter
+    #
+    # @return [BeAnInstanceOf] a new instance of the matcher
+    #
+    # @example
+    #   BeAnInstanceOf.new(String)          # Using class
+    #   BeAnInstanceOf.new("String")        # Using string
+    #   BeAnInstanceOf.new(:String)         # Using symbol
     def initialize(expected)
       @expected = String(expected)
       return if /\A[A-Z]/.match?(@expected)
@@ -67,30 +76,25 @@ module Matchi
 
     # Securely checks if the yielded object is an instance of the expected class.
     #
-    # This method uses a specific Ruby reflection technique to get the true class of
-    # an object, bypassing potential method overrides:
+    # This method uses Ruby's method binding mechanism to get the true class of an object,
+    # bypassing potential method overrides. While not completely foolproof, it provides
+    # better protection against type check spoofing than using regular method calls which
+    # can be overridden.
     #
-    # 1. ::Object.instance_method(:class) retrieves the original, unoverridden 'class'
-    #    method from the Object class
-    # 2. .bind_call(obj) binds this original method to our object and calls it,
-    #    ensuring we get the real class regardless of method overrides
+    # @api public
     #
-    # This approach is more reliable than obj.class because it uses Ruby's method
-    # binding mechanism to call the original implementation directly. While not
-    # completely foolproof, it provides better protection against type check spoofing
-    # than using regular method calls which can be overridden.
+    # @yield [] Block that returns the object to check
+    # @yieldreturn [Object] The object to verify the type of
     #
-    # @example Basic class check
-    #   matcher = Matchi::BeAnInstanceOf.new(String)
+    # @return [Boolean] true if the object's actual class is exactly the expected class
+    #
+    # @raise [ArgumentError] if no block is provided
+    # @raise [NameError] if the expected class cannot be found
+    #
+    # @example Simple type check
+    #   matcher = BeAnInstanceOf.new(String)
     #   matcher.match? { "test" }        # => true
     #   matcher.match? { StringIO.new }  # => false
-    #
-    # @see https://ruby-doc.org/core/Method.html#method-i-bind_call
-    # @see https://ruby-doc.org/core/UnboundMethod.html
-    #
-    # @yieldreturn [Object] the actual value to check
-    # @return [Boolean] true if the object's actual class is exactly the expected class
-    # @raise [ArgumentError] if no block is provided
     def match?
       raise ::ArgumentError, "a block must be provided" unless block_given?
 
@@ -98,9 +102,14 @@ module Matchi
       expected_class == actual_class
     end
 
-    # Returns a string representing the matcher.
+    # Returns a human-readable description of the matcher.
     #
-    # @return [String] a human-readable description of the matcher
+    # @api public
+    #
+    # @return [String] A string describing what this matcher verifies
+    #
+    # @example
+    #   BeAnInstanceOf.new(String).to_s # => "be an instance of String"
     def to_s
       "be an instance of #{@expected}"
     end
@@ -108,10 +117,13 @@ module Matchi
     private
 
     # Resolves the expected class name to an actual Class object.
-    # This method handles both string and symbol class names through constant resolution.
     #
-    # @return [Class] the resolved class
-    # @raise [NameError] if the class doesn't exist
+    # @api private
+    #
+    # @return [Class] The resolved class object
+    # @raise [NameError] If the class name cannot be resolved to an actual class
+    #
+    # @note This method handles both string and symbol class names through constant resolution
     def expected_class
       ::Object.const_get(@expected)
     end

@@ -2,54 +2,103 @@
 
 module Matchi
   class Change
-    # *Change to* matcher.
+    # Final state matcher that verifies if a method returns an expected value after a change.
+    #
+    # This matcher focuses on the final state of an object, verifying that a method call
+    # returns an expected value after executing a block of code. Unlike the full from/to
+    # matcher, it only cares about the end result, not the initial state.
+    #
+    # @example Basic string transformation
+    #   text = "hello"
+    #   matcher = Matchi::Change::To.new("HELLO") { text.to_s }
+    #   matcher.match? { text.upcase! }   # => true
+    #   matcher.match? { text.reverse! }  # => false
+    #
+    # @example Number calculations
+    #   counter = 0
+    #   matcher = Matchi::Change::To.new(5) { counter }
+    #   matcher.match? { counter = 5 }    # => true
+    #   matcher.match? { counter += 1 }   # => false
+    #
+    # @example With object attributes
+    #   class User
+    #     attr_accessor :status
+    #     def initialize(status)
+    #       @status = status
+    #     end
+    #   end
+    #
+    #   user = User.new(:pending)
+    #   matcher = Matchi::Change::To.new(:active) { user.status }
+    #   matcher.match? { user.status = :active }  # => true
+    #
+    # @see Matchi::Change::From::To For checking both initial and final states
+    # @see Matchi::Change::By For checking numeric changes
     class To
-      # Initialize the matcher with an object and a block.
+      # Initialize the matcher with an expected new value and a state block.
       #
-      # @example
-      #   require "matchi/change/to"
+      # @api public
       #
-      #   object = "foo"
+      # @param expected [#eql?] The expected final value
+      # @param state [Proc] Block that retrieves the value to check
       #
-      #   Matchi::Change::To.new("FOO") { object.to_s }
+      # @raise [ArgumentError] if no state block is provided
       #
-      # @param expected [#object_id]  An expected new value.
-      # @param state    [Proc]        A block of code to execute to get the
-      #   state of the object.
+      # @return [To] a new instance of the matcher
+      #
+      # @example With simple value
+      #   To.new("test") { object.value }
+      #
+      # @example With complex calculation
+      #   To.new(100) { object.items.count }
       def initialize(expected, &state)
         raise ::ArgumentError, "a block must be provided" unless block_given?
 
         @expected = expected
-        @state    = state
+        @state = state
       end
 
-      # Boolean comparison on the expected change by comparing the value
-      # before and after the code execution.
+      # Checks if the state block returns the expected value after executing the provided block.
       #
-      # @example
-      #   require "matchi/change/to"
+      # This method executes the provided block and then checks if the state block
+      # returns the expected value. It only cares about the final state, not any
+      # intermediate values or the initial state.
       #
-      #   object = "foo"
+      # @api public
       #
-      #   matcher = Matchi::Change::To.new("FOO") { object.to_s }
-      #   matcher.match? { object.upcase! } # => true
+      # @yield [] Block that should cause the state change
+      # @yieldreturn [Object] The result of the block (not used)
       #
-      # @yieldreturn [#object_id] The block of code to execute.
+      # @return [Boolean] true if the final state matches the expected value
       #
-      # @return [Boolean] Comparison between the value before and after the
-      #   code execution.
+      # @raise [ArgumentError] if no block is provided
+      #
+      # @example Basic usage
+      #   text = "hello"
+      #   matcher = To.new("HELLO") { text.to_s }
+      #   matcher.match? { text.upcase! }  # => true
+      #
+      # @example With method chaining
+      #   array = [1, 2, 3]
+      #   matcher = To.new(6) { array.sum }
+      #   matcher.match? { array.map! { |x| x * 2 } }  # => false
       def match?
         raise ::ArgumentError, "a block must be provided" unless block_given?
 
         yield
         value_after = @state.call
 
-        @expected == value_after
+        @expected.eql?(value_after)
       end
 
-      # Returns a string representing the matcher.
+      # Returns a human-readable description of the matcher.
       #
-      # @return [String] a human-readable description of the matcher
+      # @api public
+      #
+      # @return [String] A string describing what this matcher verifies
+      #
+      # @example
+      #   To.new("test").to_s # => 'change to "test"'
       def to_s
         "change to #{@expected.inspect}"
       end

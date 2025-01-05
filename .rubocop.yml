@@ -28,3 +28,6 @@ Style/StringLiteralsInInterpolation:
 # We do not need to support Ruby 1.9, so this is good to use.
 Style/SymbolArray:
   Enabled: true
+
+Style/ArgumentsForwarding:
+  Enabled: false
