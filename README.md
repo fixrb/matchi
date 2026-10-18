@@ -6,7 +6,7 @@
 
 Framework-agnostic matchers for Ruby. Small, explicit, and written so that the object under test cannot forge a match.
 
-![A Rubyist juggling between Matchi letters](https://github.com/fixrb/matchi/raw/main/img/matchi.png)
+![A pixel-art jester juggling the letters of Matchi](https://github.com/fixrb/matchi/raw/main/img/matchi.png)
 
 ## Installation
 
