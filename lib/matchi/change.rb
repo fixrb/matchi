@@ -1,85 +1,54 @@
 # frozen_string_literal: true
 
-require_relative File.join("change", "by_at_least")
-require_relative File.join("change", "by_at_most")
-require_relative File.join("change", "by")
-require_relative File.join("change", "from")
-require_relative File.join("change", "to")
+require_relative "change/delta"
+require_relative "change/from"
+require_relative "change/to"
+require_relative "constant"
 
 module Matchi
-  # Wraps the target of a change matcher.
+  # State change matcher: passes when evaluating the block changes the value
+  # returned by a public method of an object.
+  #
+  # The observed method is called with `public_send` before and after the
+  # block, and the two values are compared with `eql?`. The observed method
+  # must return a value, not the mutated object itself: when it returns the
+  # very same unfrozen object twice, the comparison cannot tell whether that
+  # object changed, and `match?` raises instead of answering `false`.
+  # `attr_reader :items` with `items << x` is that case; observe
+  # `items.length` or use {#to}, which compares with the expected value. A
+  # frozen object returned twice counts as an unchanged value.
+  #
+  # The refinements {#by}, {#by_at_least}, {#by_at_most}, {#from} and {#to}
+  # build more specific matchers. `Change`, `by`, `by_at_least` and
+  # `by_at_most` compare values produced by the observed object, so they
+  # depend on its honesty, like {Matchi::Predicate}. `to` and `from … to`
+  # compare with the expected value, like {Matchi::Eq}. Whatever the
+  # observed method raises propagates.
+  #
+  # @example
+  #   list = []
+  #   Matchi::Change.new(list, :length).match? { list << 1 }       # => true
+  #   Matchi::Change.new(list, :length).by(1).match? { list << 1 } # => true
   class Change
-    # Initialize a wrapper of the change matcher with an object and the name of
-    # one of its methods.
-    #
-    # @api public
-    #
-    # @param object [#object_id] The object whose state will be monitored
-    # @param method [Symbol] The name of the method to track
-    # @param args [Array] Additional positional arguments to pass to the method
-    # @param kwargs [Hash] Additional keyword arguments to pass to the method
-    # @param block [Proc] Optional block to pass to the method
-    #
-    # @raise [ArgumentError] if method is not a Symbol
-    # @raise [ArgumentError] if object doesn't respond to method
-    #
-    # @return [Change] a new instance of the change wrapper
-    #
-    # @example Basic initialization
-    #   array = []
-    #   Change.new(array, :length)              # Track array length changes
-    #
-    # @example With positional arguments
-    #   hash = { key: "value" }
-    #   Change.new(hash, :fetch, :key)          # Track specific key value
-    #
-    # @example With keyword arguments
-    #   hash = { a: 1, b: 2 }
-    #   Change.new(hash, :fetch, default: 0)    # Track with default value
-    #
-    # @example With block
-    #   hash = { a: 1 }
-    #   Change.new(hash, :fetch, :b) { |k| k.to_s }  # Track with block default
+    # @param object [Object] the object to observe
+    # @param method [Symbol, String] a public method of that object
+    # @param args [Array] positional arguments for the method
+    # @param kwargs [Hash] keyword arguments for the method
+    # @param block [Proc, nil] a block for the method
+    # @raise [ArgumentError] when method is neither a Symbol nor a String
     def initialize(object, method, *args, **kwargs, &block)
-      raise ::ArgumentError, "method must be a Symbol" unless method.is_a?(::Symbol)
-      raise ::ArgumentError, "object must respond to method" unless object.respond_to?(method)
+      raise ::ArgumentError, "method must be a Symbol or a String (got: #{method.inspect})" unless name?(method)
 
-      @state = -> { object.send(method, *args, **kwargs, &block) }
+      @object = object
+      @method = method.to_sym
+      @state = -> { ::Kernel.instance_method(:public_send).bind_call(object, @method, *args, **kwargs, &block) }
     end
 
-    # Checks if the tracked method's return value changes when executing the block.
-    #
-    # This method verifies that the value changes in any way between the start and end
-    # of the block execution. It doesn't care about the type or magnitude of the change,
-    # only that it's different.
-    #
-    # @api public
-    #
-    # @yield [] Block during which the change should occur
-    # @yieldreturn [Object] Result of the block execution (not used)
-    #
-    # @return [Boolean] true if the value changed, false otherwise
-    #
-    # @raise [ArgumentError] if no block is provided
-    #
-    # @example Basic usage with array length
-    #   array = []
-    #   matcher = Change.new(array, :length)
-    #   matcher.match? { array << "item" }    # => true
-    #   matcher.match? { array.clear }        # => true (from 1 to 0)
-    #   matcher.match? { array.dup }          # => false (no change)
-    #
-    # @example With method parameters
-    #   hash = { key: "old" }
-    #   matcher = Change.new(hash, :fetch, :key)
-    #   matcher.match? { hash[:key] = "new" }  # => true
-    #   matcher.match? { hash[:key] = "new" }  # => false (same value)
-    #
-    # @example With computed values
-    #   text = "hello"
-    #   matcher = Change.new(text, :upcase)
-    #   matcher.match? { text.upcase! }        # => true
-    #   matcher.match? { text.upcase! }        # => false (already uppercase)
+    # @yieldreturn [Object] ignored, the block is evaluated for its effect
+    # @return [Boolean]
+    # @raise [ArgumentError] when no block is given
+    # @raise [NoMethodError] when the object has no such public method
+    # @raise [TypeError] when the observed method returns the same unfrozen object twice
     def match?
       raise ::ArgumentError, "a block must be provided" unless block_given?
 
@@ -87,98 +56,54 @@ module Matchi
       yield
       value_after = @state.call
 
-      !value_before.eql?(value_after)
+      return !value_before.eql?(value_after) unless value_before.equal?(value_after)
+      return false if ::Kernel.instance_method(:frozen?).bind_call(value_before)
+
+      raise ::TypeError, "#{self} returned the same unfrozen object twice: observe a value, not the object"
     end
 
-    # Returns a human-readable description of the matcher.
-    #
-    # @api public
-    #
-    # @return [String] A string describing what this matcher verifies
-    #
-    # @example
-    #   Change.new("test", :upcase).to_s # => 'eq "test"'
+    # @return [String] the observed class and method, such as `change Array#length`
     def to_s
-      "change #{@state.inspect}"
+      "change #{Constant.label(::Kernel.instance_method(:class).bind_call(@object))}##{@method}"
     end
 
-    # Specifies a minimum delta of the expected change.
-    #
-    # @api public
-    #
-    # @param minimum_delta [#object_id] The minimum expected change amount
-    #
-    # @return [#match?] A matcher that verifies the minimum change
-    #
-    # @example
-    #   counter = 0
-    #   matcher = Change.new(counter, :to_i).by_at_least(5)
-    #   matcher.match? { counter += 6 }  # => true
-    def by_at_least(minimum_delta)
-      ByAtLeast.new(minimum_delta, &@state)
-    end
-
-    # Specifies a maximum delta of the expected change.
-    #
-    # @api public
-    #
-    # @param maximum_delta [#object_id] The maximum allowed change amount
-    #
-    # @return [#match?] A matcher that verifies the maximum change
-    #
-    # @example
-    #   counter = 0
-    #   matcher = Change.new(counter, :to_i).by_at_most(5)
-    #   matcher.match? { counter += 3 }  # => true
-    def by_at_most(maximum_delta)
-      ByAtMost.new(maximum_delta, &@state)
-    end
-
-    # Specifies the exact delta of the expected change.
-    #
-    # @api public
-    #
-    # @param delta [#object_id] The exact expected change amount
-    #
-    # @return [#match?] A matcher that verifies the exact change
-    #
-    # @example
-    #   counter = 0
-    #   matcher = Change.new(counter, :to_i).by(5)
-    #   matcher.match? { counter += 5 }  # => true
+    # @param delta [Numeric] the exact expected difference, negative allowed
+    # @return [Matchi::Change::Delta]
+    # @raise [ArgumentError] when delta is not a finite real Numeric
     def by(delta)
-      By.new(delta, &@state)
+      Delta.new(:by, delta, &@state)
     end
 
-    # Specifies the original value in a value transition check.
-    #
-    # @api public
-    #
-    # @param old_value [#object_id] The expected initial value
-    #
-    # @return [#to] A wrapper for creating a from/to matcher
-    #
-    # @example
-    #   string = "foo"
-    #   Change.new(string, :to_s).from("foo").to("FOO")
+    # @param delta [Numeric] the smallest acceptable increase, zero or positive
+    # @return [Matchi::Change::Delta]
+    # @raise [ArgumentError] when delta is not a finite real non-negative Numeric
+    def by_at_least(delta)
+      Delta.new(:by_at_least, delta, &@state)
+    end
+
+    # @param delta [Numeric] the largest acceptable increase, zero or positive
+    # @return [Matchi::Change::Delta]
+    # @raise [ArgumentError] when delta is not a finite real non-negative Numeric
+    def by_at_most(delta)
+      Delta.new(:by_at_most, delta, &@state)
+    end
+
+    # @param old_value [#eql?] the expected value before the block
+    # @return [Matchi::Change::From] a builder; call `to` on it
     def from(old_value)
       From.new(old_value, &@state)
     end
 
-    # Specifies the final value to expect.
-    #
-    # @api public
-    #
-    # @param new_value [#object_id] The expected final value
-    #
-    # @return [#match?] A matcher that verifies the final state
-    #
-    # @example
-    #   string = "foo"
-    #   matcher = Change.new(string, :to_s).to("FOO")
-    #   matcher.match? { string.upcase! }  # => true
+    # @param new_value [#eql?] the expected value after the block
+    # @return [Matchi::Change::To]
     def to(new_value)
       To.new(new_value, &@state)
+    end
+
+    private
+
+    def name?(method)
+      ::Symbol === method || ::String === method
     end
   end
 end

@@ -1,75 +1,35 @@
 # frozen_string_literal: true
 
-require_relative File.join("from", "to")
+require_relative "from_to"
 
 module Matchi
   class Change
-    # Initial state wrapper for building a value transition matcher.
+    # Builder for the `change from OLD to NEW` matcher. It is not a matcher
+    # itself: it does not respond to `match?`, so a forgotten `to` is rejected
+    # by any framework that checks the matcher interface.
     #
-    # This class acts as a wrapper that captures the expected initial state and
-    # provides methods to build a complete transition matcher. When combined with
-    # the 'to' method, it creates a matcher that verifies both the starting and
-    # ending values of a change operation. This is useful when you need to ensure
-    # not only the final state but also the initial state of a value.
-    #
-    # @example Basic string transformation
-    #   text = "hello"
-    #   Change.new(text, :to_s).from("hello").to("HELLO").match? { text.upcase! }  # => true
-    #
-    # @example Object state transition
-    #   class User
-    #     attr_accessor :status
-    #     def initialize
-    #       @status = "pending"
-    #     end
-    #   end
-    #
-    #   user = User.new
-    #   Change.new(user, :status).from("pending").to("active").match? {
-    #     user.status = "active"
-    #   }  # => true
-    #
-    # @see Matchi::Change::From::To For the complete transition matcher
+    # @example
+    #   Matchi::Change.new(s, :to_s).from("a").to("b")
     class From
-      # Initialize the wrapper with an object and a block.
-      #
-      # @example
-      #   require "matchi/change/from"
-      #
-      #   object = "foo"
-      #
-      #   Matchi::Change::From.new("foo") { object.to_s }
-      #
-      # @param expected [#object_id]  An expected initial value.
-      # @param state    [Proc]        A block of code to execute to get the
-      #   state of the object.
-      def initialize(expected, &state)
+      # @param old_value [#eql?] the expected value before the block
+      # @yieldreturn [Object] the observed value
+      # @raise [ArgumentError] when no block is given
+      def initialize(old_value, &state)
         raise ::ArgumentError, "a block must be provided" unless block_given?
 
-        @expected = expected
-        @state    = state
+        @old_value = old_value
+        @state = state
       end
 
-      # Specifies the new value to expect.
-      #
-      # Creates a complete transition matcher that verifies both the initial
-      # and final states of a value. The matcher will succeed only if the
-      # value starts at the expected initial state and changes to the specified
-      # new value after executing the test block.
-      #
-      # @example
-      #   require "matchi/change/from"
-      #
-      #   object = "foo"
-      #
-      #   change_from_wrapper = Matchi::Change::From.new("foo") { object.to_s }
-      #   change_from_wrapper.to("FOO")
-      #
-      # @param expected_new_value [#object_id] The new value to expect.
-      #
-      # @return [#match?] A *change from to* matcher.
-      def to(expected_new_value)
-        To.new(@expected, expected_new_value, &@state)
+      # @param new_value [#eql?] the expected value after the block
+      # @return [Matchi::Change::FromTo]
+      def to(new_value)
+        FromTo.new(@old_value, new_value, &@state)
+      end
+
+      # @return [String]
+      def to_s
+        "change from #{@old_value.inspect}"
       end
     end
   end

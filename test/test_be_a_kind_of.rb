@@ -3,130 +3,69 @@
 require_relative File.join("support", "coverage")
 require_relative File.join("..", "lib", "matchi", "be_a_kind_of")
 
-# Test base class matching
-matcher = Matchi::BeAKindOf.new(String)
-raise unless matcher.match? { "test" }
-raise if matcher.match? { 42 }
-
-# Test string representations
-raise unless matcher.to_s == "be a kind of String"
-
-# Test with symbol class name
-matcher = Matchi::BeAKindOf.new(:String)
-raise unless matcher.match? { "test" }
-raise if matcher.match? { 42 }
-
-# Test class hierarchy
-class GrandParent; end # rubocop:disable Lint/EmptyClass
-class Parent < GrandParent; end
-class Child < Parent; end
-
-matcher = Matchi::BeAKindOf.new(Parent)
-raise unless matcher.match? { Child.new }
-raise unless matcher.match? { Parent.new }
-
-matcher = Matchi::BeAKindOf.new(GrandParent)
-raise unless matcher.match? { Child.new }
-raise unless matcher.match? { Parent.new }
-raise unless matcher.match? { GrandParent.new }
-
-# Test interface/module inclusion
-module Walkable
-  def walk; end
-end
-
-class Walker
-  include Walkable
-end
-
-matcher = Matchi::BeAKindOf.new(Walkable)
-raise unless matcher.match? { Walker.new }
-raise if matcher.match? { Object.new }
-
-# Test with built-in class hierarchy
+# With a module.
 matcher = Matchi::BeAKindOf.new(Numeric)
 raise unless matcher.match? { 42 }
-raise unless matcher.match? { 42.0 }
+raise unless matcher.match? { 4.2 }
 raise if matcher.match? { "42" }
+raise unless matcher.to_s == "be a kind of Numeric"
 
-# Test with nil
-matcher = Matchi::BeAKindOf.new(NilClass)
-raise unless matcher.match? { nil }
-raise if matcher.match? { "not nil" }
+raise unless Matchi::BeAKindOf.new(Comparable).match? { 42 }
 
-# Test with non existent class during initialisation
-Matchi::BeAKindOf.new(:NonExistentClass) # Should not raise any error
+# With an anonymous class or module, described without a memory address.
+klass = Class.new
+raise unless Matchi::BeAKindOf.new(klass).match? { Class.new(klass).new }
+raise if Matchi::BeAKindOf.new(klass).match? { Object.new }
+raise unless Matchi::BeAKindOf.new(klass).to_s == "be a kind of an anonymous class"
+raise unless Matchi::BeAKindOf.new(Module.new).to_s == "be a kind of an anonymous module"
 
-# Test with non existent class during match?
-matcher = Matchi::BeAKindOf.new(:NonExistentClass)
-begin
-  matcher.match? { "test" } # Now it should raise error
-  raise
-rescue NameError
-  true
+# Matchi::Constant keeps its own name: the helper is called `label`.
+raise unless Matchi::Constant.name == "Matchi::Constant"
+raise unless Matchi::Constant.label("Foo") == "Foo"
+
+# With a name, resolved when the matcher runs.
+raise unless Matchi::BeAKindOf.new(:Numeric).match? { 42 }
+raise unless Matchi::BeAKindOf.new("File::Stat").match? { File.stat(__FILE__) }
+raise unless Matchi::BeAKindOf.new("Numeric").to_s == "be a kind of Numeric"
+
+late = Matchi::BeAKindOf.new(:MatchiTestLateClass)
+class MatchiTestLateClass; end # rubocop:disable Lint/EmptyClass
+raise unless late.match? { MatchiTestLateClass.new }
+
+# The actual value cannot lie.
+liar = Object.new
+def liar.is_a?(_mod) = true
+def liar.kind_of?(_mod) = true
+raise if Matchi::BeAKindOf.new(String).match? { liar }
+raise unless Matchi::BeAKindOf.new(BasicObject).match? { BasicObject.new }
+
+# A name must be a constant path.
+["string", "Object::lower", "42", "Foo;Bar", "::Object", "Object::", nil, 42].each do |name|
+  Matchi::BeAKindOf.new(name)
+  raise "expected ArgumentError for #{name.inspect}"
+rescue ArgumentError
+  nil
 end
 
-# Test absence of block for match?
+# A name must resolve to a module.
 begin
-  matcher = Matchi::BeAKindOf.new(String)
+  Matchi::BeAKindOf.new("RUBY_VERSION").match? { RUBY_VERSION }
+  raise "expected TypeError"
+rescue TypeError
+  nil
+end
+
+begin
+  Matchi::BeAKindOf.new("MatchiTestMissingClass").match? { nil }
+  raise "expected NameError"
+rescue NameError
+  nil
+end
+
+# A block is required.
+begin
   matcher.match?
-  raise
+  raise "expected ArgumentError"
 rescue ArgumentError => e
   raise unless e.message == "a block must be provided"
 end
-
-# Test invalid inputs
-begin
-  Matchi::BeAKindOf.new("")
-  raise
-rescue ArgumentError => e
-  raise unless e.message == "expected must start with an uppercase letter (got: )"
-end
-
-begin
-  Matchi::BeAKindOf.new("lowercase")
-  raise
-rescue ArgumentError => e
-  raise unless e.message == "expected must start with an uppercase letter (got: lowercase)"
-end
-
-begin
-  Matchi::BeAKindOf.new(42)
-  raise
-rescue ArgumentError => e
-  raise unless e.message == "expected must start with an uppercase letter (got: 42)"
-end
-
-begin
-  Matchi::BeAKindOf.new(nil)
-  raise
-rescue ArgumentError => e
-  raise unless e.message == "expected must start with an uppercase letter (got: )"
-end
-
-# Test edge cases for constant names
-begin
-  Matchi::BeAKindOf.new("Abc_123")  # Valid
-  Matchi::BeAKindOf.new("ABC")      # Valid
-rescue ArgumentError
-  raise "Should accept valid constant names"
-end
-
-begin
-  Matchi::BeAKindOf.new("123Abc")
-  raise
-rescue ArgumentError => e
-  raise unless e.message == "expected must start with an uppercase letter (got: 123Abc)"
-end
-
-# Test nested modules/classes
-module OuterModule
-  class InnerClass; end # rubocop:disable Lint/EmptyClass
-  module InnerModule; end
-end
-
-matcher = Matchi::BeAKindOf.new("OuterModule::InnerClass")
-raise unless matcher.match? { OuterModule::InnerClass.new }
-
-matcher = Matchi::BeAKindOf.new("OuterModule::InnerModule")
-raise if matcher.match? { Object.new }

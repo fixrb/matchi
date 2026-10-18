@@ -4,288 +4,152 @@
 [![Yard documentation](https://img.shields.io/badge/Yard-documentation-blue.svg?logo=github)](https://rubydoc.info/github/fixrb/matchi/main)
 [![License](https://img.shields.io/github/license/fixrb/matchi?label=License&logo=github)](https://github.com/fixrb/matchi/raw/main/LICENSE.md)
 
-Matchi is a lightweight, framework-agnostic Ruby library that provides a comprehensive set of expectation matchers for elegant and secure testing. Its design focuses on simplicity, security, and extensibility.
+Framework-agnostic matchers for Ruby. Small, explicit, and written so that the object under test cannot forge a match.
 
 ![A Rubyist juggling between Matchi letters](https://github.com/fixrb/matchi/raw/main/img/matchi.png)
 
-## Key Features
-
-- **Framework Agnostic**: Easily integrate with any Ruby testing framework
-- **Security-Focused Design**: Built with robust type checking for most matchers
-- **Simple Integration**: Minimal setup required to get started
-- **Extensible**: Create custom matchers with just a few lines of code
-- **Comprehensive**: Rich set of built-in matchers for common testing scenarios
-- **Well Documented**: Extensive documentation with clear examples and implementation details
-- **Thread Safe**: Immutable matchers design ensures thread safety in concurrent environments
-
-### Security Considerations for Predicate Matchers
-
-While most Matchi matchers are designed to resist type spoofing, predicate matchers (`Matchi::Predicate`) rely on Ruby's dynamic method dispatch system and can be vulnerable to method overriding:
-
-```ruby
-# Example of predicate matcher vulnerability:
-matcher = Matchi::Predicate.new(:be_empty)
-array = []
-
-# Method overriding can defeat the matcher
-def array.empty?
-  false
-end
-
-matcher.match? { array } # => false (Even though array is empty!)
-```
-
-This limitation is inherent to Ruby's dynamic nature when working with predicate methods. If your tests require strict security guarantees, consider using direct state verification matchers instead of predicate matchers.
-
-## What is a Matchi Matcher?
-
-A Matchi matcher is a simple Ruby object that follows a specific contract:
-
-1. **Core Interface**: Every matcher must implement a `match?` method that:
-   - Accepts a block as its only parameter
-   - Executes that block to get the actual value
-   - Returns a boolean indicating if the actual value matches the expected criteria
-
-2. **Optional Description**: Matchers can implement a `to_s` method that returns a human-readable description of the match criteria
-
-Here's the simplest possible matcher:
-
-```ruby
-module Matchi
-  class SimpleEqual
-    def initialize(expected)
-      @expected = expected
-    end
-
-    def match?
-      raise ArgumentError, "a block must be provided" unless block_given?
-
-      @expected == yield
-    end
-
-    def to_s
-      "equal #{@expected.inspect}"
-    end
-  end
-end
-
-# Usage:
-matcher = Matchi::SimpleEqual.new(42)
-matcher.match? { 42 }     # => true
-matcher.match? { "42" }   # => false
-matcher.to_s              # => "equal 42"
-```
-
-This design provides several benefits:
-- **Lazy Evaluation**: The actual value is only computed when needed via the block
-- **Encapsulation**: Each matcher is a self-contained object with clear responsibilities
-- **Composability**: Matchers can be easily combined and reused
-- **Testability**: The contract is simple and easy to verify
-
 ## Installation
 
-Add to your Gemfile:
-
 ```ruby
+# Gemfile
 gem "matchi"
 ```
 
-Or install directly:
+Matchi requires Ruby 3.3 or later and has no runtime dependency.
 
-```ruby
-gem install matchi
-```
+## Usage
 
-## Quick Start
+A matcher is built with its expected value, then asked whether an actual value matches. The block yields the actual value once; `match?` answers `true` or `false`.
 
 ```ruby
 require "matchi"
 
-# Basic equality matching
-Matchi::Eq.new("hello").match? { "hello" } # => true
-
-# Type checking
-Matchi::BeAKindOf.new(Numeric).match? { 42 }   # => true
-Matchi::BeAKindOf.new(String).match? { 42 }    # => false
-
-# State change verification
-array = []
-Matchi::Change.new(array, :length).by(2).match? { array.push(1, 2) } # => true
+matcher = Matchi::Eq.new(42)
+matcher.match? { 42 } # => true
+matcher.match? { 41 } # => false
+matcher.to_s          # => "eq 42"
 ```
 
-## Core Matchers
-
-### Value Comparison
+Every `to_s` completes the sentence "expected ACTUAL to …", which is all a test framework needs:
 
 ```ruby
-# Exact equality (eql?)
-Matchi::Eq.new("test").match? { "test" } # => true
-Matchi::Eq.new([1, 2, 3]).match? { [1, 2, 3] } # => true
+# Minitest
+def assert_matches(matcher, actual)
+  assert matcher.match? { actual }, "expected #{actual.inspect} to #{matcher}"
+end
 
-# Object identity (equal?)
-symbol = :test
-Matchi::Be.new(symbol).match? { symbol } # => true
-string = "test"
-Matchi::Be.new(string).match? { string.dup } # => false
+def refute_matches(matcher, actual)
+  refute matcher.match? { actual }, "expected #{actual.inspect} not to #{matcher}"
+end
+
+assert_matches Matchi::BeAKindOf.new(Numeric), 42
+refute_matches Matchi::Match.new(/^foo/), "bar"
 ```
 
-### Type Checking
+Negation is the framework's job: Matchi has no `not_to`, it answers a boolean.
+
+## Matchers
 
 ```ruby
-# Inheritance-aware type checking
-Matchi::BeAKindOf.new(Numeric).match? { 42.0 } # => true
-Matchi::BeAKindOf.new(Integer).match? { 42.0 } # => false
+require "matchi"
 
-# Exact type matching
-Matchi::BeAnInstanceOf.new(Float).match? { 42.0 } # => true
-Matchi::BeAnInstanceOf.new(Numeric).match? { 42.0 } # => false
+# Identity (equal?) and equivalence (eql?)
+Matchi::Be.new(:foo).match? { :foo }            # => true
+Matchi::Eq.new("foo").match? { "foo" }          # => true
+Matchi::Eq.new(1).match? { 1.0 }                # => false
 
-# Using class names as strings
-Matchi::BeAKindOf.new("Numeric").match? { 42.0 } # => true
-Matchi::BeAnInstanceOf.new("Float").match? { 42.0 } # => true
+# Types: a module, or its name resolved when the matcher runs
+Matchi::BeAKindOf.new(Numeric).match? { 42 }       # => true
+Matchi::BeAnInstanceOf.new(:Integer).match? { 42 } # => true
+Matchi::BeAnInstanceOf.new(Numeric).match? { 42 }  # => false
+
+# Numeric proximity; a non-Numeric actual value fails
+Matchi::BeWithin.new(0.01).of(0.3).match? { 0.1 + 0.2 } # => true
+
+# Patterns and predicates
+Matchi::Match.new(/^foo/).match? { "foobar" }            # => true
+Matchi::Satisfy.new { |v| v > 41 }.match? { 42 }         # => true
+Matchi::Predicate.new(:be_empty).match? { [] }           # => true (calls empty?)
+Matchi::Predicate.new(:have_key, :a).match? { { a: 1 } } # => true (calls has_key?(:a))
+
+# Exceptions, by class or by name, optionally with a message (String or Regexp)
+Matchi::RaiseException.new(ZeroDivisionError).match? { 1 / 0 }               # => true
+Matchi::RaiseException.new("Errno::ENOENT").match? { File.read("/missing") } # => true
+Matchi::RaiseException.new(ZeroDivisionError, /by 0/).match? { 1 / 0 }       # => true
+
+# State changes, observed through a public method
+list = []
+Matchi::Change.new(list, :length).match? { list << 1 }                # => true
+Matchi::Change.new(list, :length).by(2).match? { list.push(1, 2) }    # => true
+Matchi::Change.new(list, :length).by_at_least(1).match? { list << 1 } # => true
+Matchi::Change.new(list, :length).by_at_most(1).match? { list << 1 }  # => true
+
+list = []
+Matchi::Change.new(list, :length).to(1).match? { list << 1 }         # => true
+Matchi::Change.new(list, :length).from(1).to(2).match? { list << 1 } # => true
 ```
 
-### State Changes
+`BeWithin.new(delta)` and `Change#from(value)` are builders, not matchers: they do not respond to `match?` until `of` or `to` completes them.
+
+Arguments are validated when the matcher is built (`ArgumentError`); a name is resolved when the matcher runs (`NameError`, or `TypeError` when the constant is not a module). A block is always required by `match?`. Whatever the actual value or an observed method raises propagates; `RaiseException` catches what its block raises, not what its message filter or the resolution of its name raises.
+
+`RaiseException` catches every `Exception`, including `SystemExit` and `Interrupt`, so that a specification can assert on them; an unexpected `exit` inside the block is a failure, not the end of the process.
+
+`Change` observes a value: when the observed method returns the same unfrozen object twice (an `attr_reader` on a mutated array, say), `match?` raises instead of reporting no change. Observe `items.length`, or use `to`.
+
+## Writing a matcher
+
+Any object that responds to `match?` with a block and to `to_s` is a matcher:
 
 ```ruby
-# Verify exact changes
-counter = 0
-Matchi::Change.new(counter, :to_i).by(5).match? { counter += 5 } # => true
+class BePositive
+  def match?
+    yield.positive?
+  end
 
-# Verify minimum changes
-Matchi::Change.new(counter, :to_i).by_at_least(2).match? { counter += 3 } # => true
-
-# Verify maximum changes
-Matchi::Change.new(counter, :to_i).by_at_most(5).match? { counter += 3 } # => true
-
-# Track value transitions
-string = "hello"
-Matchi::Change.new(string, :to_s).from("hello").to("HELLO").match? { string.upcase! } # => true
-
-# Simple change detection
-array = []
-Matchi::Change.new(array, :length).match? { array << 1 } # => true
-
-# Check final state only
-counter = 0
-Matchi::Change.new(counter, :to_i).to(5).match? { counter = 5 } # => true
-```
-
-### Pattern Matching
-
-```ruby
-# Regular expressions
-Matchi::Match.new(/^test/).match? { "test_string" } # => true
-Matchi::Match.new(/^\d{3}-\d{2}$/).match? { "123-45" } # => true
-
-# Custom predicates with Satisfy
-Matchi::Satisfy.new { |x| x.positive? && x < 10 }.match? { 5 } # => true
-Matchi::Satisfy.new { |arr| arr.all?(&:even?) }.match? { [2, 4, 6] } # => true
-
-# Built-in predicates
-Matchi::Predicate.new(:be_empty).match? { [] } # => true
-Matchi::Predicate.new(:have_key, :name).match? { { name: "Alice" } } # => true
-```
-
-### Exception Handling
-
-```ruby
-# Verify raised exceptions
-Matchi::RaiseException.new(ArgumentError).match? { raise ArgumentError } # => true
-
-# Works with inheritance
-Matchi::RaiseException.new(StandardError).match? { raise ArgumentError } # => true
-
-# Using exception class names
-Matchi::RaiseException.new("ArgumentError").match? { raise ArgumentError } # => true
-```
-
-### Numeric Comparisons
-
-```ruby
-# Delta comparisons
-Matchi::BeWithin.new(0.5).of(3.0).match? { 3.2 } # => true
-Matchi::BeWithin.new(2).of(10).match? { 9 } # => true
-```
-
-## Creating Custom Matchers
-
-Creating custom matchers is straightforward:
-
-```ruby
-module Matchi
-  class BePositive
-    def match?
-      yield.positive?
-    end
-
-    def to_s
-      "be positive"
-    end
+  def to_s
+    "be positive"
   end
 end
 
-matcher = Matchi::BePositive.new
-matcher.match? { 42 }  # => true
-matcher.match? { -1 }  # => false
+BePositive.new.match? { 42 } # => true
 ```
 
-## Security Best Practices
+Every matcher in Matchi follows two rules, which are worth keeping in your own:
 
-### Proper Value Comparison Order
+- **The expected value receives the comparison.** `Matchi::Eq.new(a).match? { b }` evaluates `a.eql?(b)`, never `b.eql?(a)`, so an actual value that redefines `eql?` cannot pass; since `Hash#eql?` hands the comparison back to an operand of another class, `Eq` also requires the two values to be of the same class. Classes are compared with `Module#===`, the class of the actual value is read with `Kernel#class` bound to it, and `BeWithin` only subtracts core numbers, for the same reason.
+- **A predicate answers `true` or `false`.** `Satisfy` and `Predicate` raise a `TypeError` on any other value instead of treating it as truthy.
 
-One of the most critical aspects when implementing matchers is the order of comparison between expected and actual values. Always compare values in this order:
+Two matchers depend on the honesty of the object under test, because they use values it produces: `Predicate` calls one of its methods, and `Change` (with `by`, `by_at_least`, `by_at_most`) compares two values returned by the observed method, including the subtraction between them. So does the message filter of `RaiseException`, which reads the exception's own message. `Change#to` and `from … to` compare with the expected value and do not.
 
-```ruby
-# GOOD: Expected value controls the comparison
-expected_value.eql?(actual_value)
-# BAD: Actual value controls the comparison
-actual_value.eql?(expected_value)
-```
+A class or an exception given by name (`:Duck`, `"Errno::ENOENT"`) is resolved from `Object` when the matcher runs, so a specification can be written before the class it describes is loaded. An `autoload` or an `Object.const_missing` defined by the code under test takes part in that resolution, so a name does not carry the guarantee a module does. Names are ASCII constant paths; `"::Integer"` is not accepted.
 
-#### Why This Matters
+## Differences from RSpec
 
-The order is crucial because the object receiving the comparison method controls how the comparison is performed. When testing, the actual value might come from untrusted or malicious code that could override comparison methods:
+If you come from RSpec or Minitest, these will surprise you:
 
-```ruby
-# Example of how comparison can be compromised
-class MaliciousString
-  def eql?(other)
-    true  # Always returns true regardless of actual equality
-  end
+- `Eq` is RSpec's `eql`, not its `eq`: it compares with `eql?`, so `1` is not `1.0`, and a value object that only defines `==` never matches. Define `eql?` and `hash` on it, or use `Satisfy`. `Integer#==` hands the comparison to the other operand, which is why Matchi does not use it.
+- `Match` takes a `Regexp` only. For a literal substring, `Matchi::Match.new(Regexp.new(Regexp.escape("a.b")))`.
+- `RaiseException` is `raise_error`; it needs an exception class, or its name, and takes an optional message.
+- `Change#to` demands a change: a value already equal to the target does not pass. `Change` without a refinement needs the observed method to return a value, not the mutated object.
+- `Predicate` only calls a method of the actual value: `be_nil` calls `nil?`, but `be_truthy`, `be_falsey` and `be_a` are not predicates and do not exist. Use `Be.new(nil)`, `Satisfy`, `BeAKindOf`.
+- There is no `and`, `or`, `not_to` or `all`: compose in your framework, with plain booleans.
 
-  def ==(other)
-    true  # Always returns true regardless of actual equality
-  end
-end
+## Changes in 5.0
 
-actual = MaliciousString.new
-expected = "expected string"
-actual.eql?(expected)      # => true (incorrect result!)
-expected.eql?(actual)      # => false (correct result)
-```
-
-This is why Matchi's built-in matchers are implemented with this security consideration in mind. For example, the `Eq` matcher:
-
-```ruby
-# Implementation in Matchi::Eq
-def match?
-  @expected.eql?(yield) # Expected value controls the comparison
-end
-```
-
-## Extensions
-
-### matchi-fix
-
-The [matchi-fix gem](https://rubygems.org/gems/matchi-fix) extends Matchi with support for testing against [Fix](https://github.com/fixrb/fix) specifications. It provides a seamless integration between Matchi's matcher interface and Fix's powerful specification system.
-
-```ruby
-# Add to your Gemfile
-gem "matchi-fix"
-```
-
-This extension adds a `Fix` matcher that allows you to verify implementation conformance to Fix test specifications across different testing frameworks like Minitest and RSpec.
+- `BeAKindOf`, `BeAnInstanceOf` and `RaiseException` accept a module directly, so anonymous classes work. A name is still accepted; it must be a constant path (`"Foo::bar"` is rejected at construction) and resolve to a module, or a class for `BeAnInstanceOf` and an exception class for `RaiseException`. `BeAnInstanceOf` rejects a module that is not a class.
+- `RaiseException` compares with `Module#===` and always answers `true` or `false`; `Module#<=` could answer `nil` and let the exception control the comparison. A non-exception class is rejected at construction. An expected message, `String` or `Regexp`, can be given.
+- `Match` accepts a `Regexp` only, and fails on an actual value that is neither a `String` nor a `Symbol`, or whose encoding is invalid or incompatible. With a `String` pattern, the actual value would have become the regular expression.
+- `Eq`, `Change#to` and `from … to` require the actual value to be of the class of the expected value, so that `Hash#eql?` cannot hand the comparison to the object under test.
+- `Satisfy` requires a `true` or `false` answer (`TypeError`), as `Predicate` already did. The error names the class of the answer, never its `inspect`.
+- `Predicate` and `Change` reach the object under test through `Kernel#public_send`: a private or protected predicate is now a `NoMethodError`. `Change` accepts a `String` method name and no longer checks `respond_to?` at construction; a missing method is a `NoMethodError` when the matcher runs.
+- `BeWithin::Of` only subtracts an `Integer`, a `Float`, a `Rational` or a `BigDecimal`; any other actual value fails, including a user-defined `Numeric` that could control the subtraction through `coerce`. Deltas and expected values, there and in `by`, `by_at_least`, `by_at_most`, must be finite real numbers (`NaN`, infinities and `Complex` are rejected).
+- `BeWithin` without `of` and `Change#from` without `to` no longer respond to `match?`.
+- `from … to` compares with `eql?`, like `to` and `Eq` already did; `to` requires a change; both always evaluate the block. `Change` raises a `TypeError` when the observed method returns the same unfrozen object twice: in particular, asserting that an attribute holding an unfrozen object (a `Time`, an `Array`) did not change now raises instead of answering `false`. The three `by` refinements are one class, `Change::Delta`; `Change::From::To` is `Change::FromTo`.
+- Descriptions are stable: `Change#to_s` names the observed class and method (`change Array#length`), an anonymous class reads `an anonymous class`, and no `to_s` calls `inspect` on an object under test.
+- Error messages are rewritten and all read `X must be … (got: …)`; `Predicate::PREFIXES` is gone.
+- The `Matchi` helper module removed in 4.2 is not back: `Matchi` is a namespace. Frameworks define their own helpers.
+- Ruby 3.3 or later.
 
 ## Versioning
 

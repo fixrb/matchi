@@ -1,133 +1,101 @@
 # frozen_string_literal: true
 
-module Matchi
-  # Exception matcher that verifies if a block of code raises a specific exception.
-  #
-  # This matcher ensures that code raises an expected exception by executing it within
-  # a controlled environment. It supports matching against specific exception classes
-  # and their subclasses, providing a reliable way to test error handling.
-  #
-  # @example Basic usage with standard exceptions
-  #   matcher = Matchi::RaiseException.new(ArgumentError)
-  #   matcher.match? { raise ArgumentError }    # => true
-  #   matcher.match? { raise RuntimeError }     # => false
-  #   matcher.match? { "no error" }             # => false
-  #
-  # @example Working with inheritance hierarchy
-  #   class CustomError < StandardError; end
-  #   class SpecificError < CustomError; end
-  #
-  #   matcher = Matchi::RaiseException.new(CustomError)
-  #   matcher.match? { raise CustomError }      # => true
-  #   matcher.match? { raise SpecificError }    # => true
-  #   matcher.match? { raise StandardError }    # => false
-  #
-  # @example Using string class names
-  #   matcher = Matchi::RaiseException.new("ArgumentError")
-  #   matcher.match? { raise ArgumentError }    # => true
-  #
-  # @example With custom exception hierarchies
-  #   module Api
-  #     class Error < StandardError; end
-  #     class AuthenticationError < Error; end
-  #   end
-  #
-  #   matcher = Matchi::RaiseException.new("Api::Error")
-  #   matcher.match? { raise Api::AuthenticationError } # => true
-  #
-  # @see https://ruby-doc.org/core/Exception.html
-  # @see https://ruby-doc.org/core/StandardError.html
-  class RaiseException
-    # Initialize the matcher with an exception class.
-    #
-    # @api public
-    #
-    # @param expected [Exception, #to_s] The expected exception class or its name
-    #   Can be provided as a Class, String, or Symbol
-    #
-    # @raise [ArgumentError] if the class name doesn't start with an uppercase letter
-    #
-    # @return [RaiseException] a new instance of the matcher
-    #
-    # @example
-    #   RaiseException.new(ArgumentError)         # Using class
-    #   RaiseException.new("ArgumentError")       # Using string
-    #   RaiseException.new(:ArgumentError)        # Using symbol
-    #   RaiseException.new("Api::CustomError")    # Using namespaced class
-    def initialize(expected)
-      @expected = String(expected)
-      return if /\A[A-Z]/.match?(@expected)
+require_relative "constant"
 
-      raise ::ArgumentError,
-            "expected must start with an uppercase letter (got: #{@expected})"
+module Matchi
+  # Exception matcher: passes when evaluating the block raises an exception
+  # of the expected class or of one of its descendants (`Module#===`, so the
+  # exception cannot lie about its class), optionally with an expected
+  # message: a String the message must be `eql?` to, or a Regexp it must
+  # match.
+  #
+  # Every `Exception` is caught, including `SystemExit` and `Interrupt`: a
+  # specification must be able to assert on any of them, so an unexpected
+  # `exit` or Ctrl-C inside the block is reported as a failure, not
+  # propagated. The expected class can be given directly, or by name; see
+  # {Matchi::Constant}.
+  #
+  # @example
+  #   Matchi::RaiseException.new(ZeroDivisionError).match? { 1 / 0 }              # => true
+  #   Matchi::RaiseException.new(:StandardError).match? { 1 / 0 }                 # => true
+  #   Matchi::RaiseException.new(ZeroDivisionError, /by 0/).match? { 1 / 0 }      # => true
+  #   Matchi::RaiseException.new(ZeroDivisionError, "nope").match? { 1 / 0 }      # => false
+  #   Matchi::RaiseException.new(IOError).match? { 1 / 0 }                        # => false
+  class RaiseException
+    # @param expected [Class, String, Symbol] the expected exception class, or its name
+    # @param message [String, Regexp, nil] the expected message, exact or as a pattern
+    # @raise [ArgumentError] when expected is neither an Exception class nor a constant name,
+    #   or message is neither a String nor a Regexp
+    def initialize(expected, message = nil)
+      @expected = Constant.normalize(expected, ::Class)
+      @message = message
+      validate_class!
+      validate_message!
     end
 
-    # Checks if the yielded block raises the expected exception.
-    #
-    # This method executes the provided block within a begin/rescue clause and verifies
-    # that it raises an exception of the expected type. It also handles inheritance,
-    # allowing subclasses of the expected exception to match.
-    #
-    # @api public
-    #
-    # @yield [] Block that should raise an exception
-    # @yieldreturn [Object] The result of the block (if it doesn't raise)
-    #
-    # @return [Boolean] true if the block raises the expected exception
-    #
-    # @raise [ArgumentError] if no block is provided
-    # @raise [ArgumentError] if expected exception class doesn't inherit from Exception
-    # @raise [NameError] if the expected exception class cannot be found
-    #
-    # @example Standard usage
-    #   matcher = RaiseException.new(ArgumentError)
-    #   matcher.match? { raise ArgumentError }     # => true
-    #
-    # @example With inheritance
-    #   matcher = RaiseException.new(StandardError)
-    #   matcher.match? { raise ArgumentError }     # => true
-    #
-    # @example Without exception
-    #   matcher = RaiseException.new(StandardError)
-    #   matcher.match? { "no error" }             # => false
+    # @yieldreturn [Object] ignored, the block is evaluated for its exception
+    # @return [Boolean]
+    # @raise [ArgumentError] when no block is given
+    # @raise [NameError] when the name is not defined
+    # @raise [TypeError] when the name does not resolve to an Exception class
     def match?
       raise ::ArgumentError, "a block must be provided" unless block_given?
 
+      # Resolved before the block, so that a NameError from the name is not
+      # mistaken for an exception raised by the block.
       klass = expected_class
-      raise ::ArgumentError, "expected exception class must inherit from Exception" unless klass <= ::Exception
 
       begin
         yield
         false
       rescue ::Exception => e # rubocop:disable Lint/RescueException
-        e.class <= klass
+        klass === e && message?(e)
       end
     end
 
-    # Returns a human-readable description of the matcher.
-    #
-    # @api public
-    #
-    # @return [String] A string describing what this matcher verifies
-    #
-    # @example
-    #   RaiseException.new(ArgumentError).to_s  # => "raise exception ArgumentError"
+    # @return [String]
     def to_s
-      "raise exception #{@expected}"
+      return "raise exception #{Constant.label(@expected)}" if @message.nil?
+
+      "raise exception #{Constant.label(@expected)} with message #{@message.inspect}"
     end
 
     private
 
-    # Resolves the expected class name to an actual Exception class.
-    #
-    # @api private
-    #
-    # @return [Class] The resolved exception class
-    # @raise [NameError] If the class name cannot be resolved to an actual class
-    #
-    # @note This method handles both string and symbol class names through constant resolution
+    def validate_class!
+      return unless ::Class === @expected
+      return if @expected <= ::Exception
+
+      raise ::ArgumentError, "expected must inherit from Exception (got: #{@expected.inspect})"
+    end
+
+    def validate_message!
+      return if @message.nil? || ::String === @message || ::Regexp === @message
+
+      raise ::ArgumentError, "message must be a String or a Regexp (got: #{@message.inspect})"
+    end
+
     def expected_class
-      ::Object.const_get(@expected)
+      return @expected if ::Class === @expected
+
+      klass = Constant.resolve(@expected, ::Class)
+      raise ::TypeError, "#{@expected} is not an Exception class" unless klass <= ::Exception
+
+      klass
+    end
+
+    # The message is whatever the exception answers to `message`, which is
+    # its own data, as with any exception; it must be a valid String. The
+    # expected String or Regexp receives the comparison.
+    def message?(exception)
+      return true if @message.nil?
+
+      message = exception.message
+      return false unless ::String === message && message.valid_encoding?
+
+      ::String === @message ? @message.eql?(message) : @message.match?(message)
+    rescue ::Encoding::CompatibilityError
+      false
     end
   end
 end

@@ -1,172 +1,73 @@
 # frozen_string_literal: true
 
-module Matchi
-  # Predicate matcher that checks if an object responds to a predicate method with a truthy value.
-  #
-  # This matcher converts a predicate name (starting with 'be_' or 'have_') into a method call
-  # ending with '?' and verifies that calling this method returns a boolean value. It's useful
-  # for testing state-checking methods and collection properties. The matcher supports two types
-  # of predicate formats: 'be_*' which converts to '*?' and 'have_*' which converts to 'has_*?'.
-  #
-  # @example Basic empty check
-  #   matcher = Matchi::Predicate.new(:be_empty)
-  #   matcher.match? { [] }        # => true
-  #   matcher.match? { [1, 2] }    # => false
-  #
-  # @example Object property check with arguments
-  #   matcher = Matchi::Predicate.new(:have_key, :name)
-  #   matcher.match? { { name: "Alice" } }  # => true
-  #   matcher.match? { { age: 30 } }        # => false
-  #
-  # @example Using keyword arguments
-  #   class Record
-  #     def complete?(status: nil)
-  #       status.nil? || status == :validated
-  #     end
-  #   end
-  #
-  #   matcher = Matchi::Predicate.new(:be_complete, status: :validated)
-  #   matcher.match? { Record.new }  # => true
-  #
-  # @example With block arguments
-  #   class List
-  #     def all?(&block)
-  #       block ? super : empty?
-  #     end
-  #   end
-  #
-  #   matcher = Matchi::Predicate.new(:be_all) { |x| x.positive? }
-  #   matcher.match? { [1, 2, 3] }    # => true
-  #   matcher.match? { [-1, 2, 3] }   # => false
-  #
-  # @see https://ruby-doc.org/core/Object.html#method-i-respond_to-3F
-  class Predicate
-    # Mapping of predicate prefixes to their method name transformations.
-    # Each entry defines how a prefix should be converted to its method form.
-    #
-    # @api private
-    PREFIXES = {
-      "be_"   => ->(name) { "#{name.gsub(/\A(?:be_)/, "")}?" },
-      "have_" => ->(name) { "#{name.gsub(/\A(?:have_)/, "has_")}?" }
-    }.freeze
+require_relative "constant"
 
-    # Initialize the matcher with a predicate name and optional arguments.
-    #
-    # @api public
-    #
-    # @param name [#to_s] A matcher name starting with 'be_' or 'have_'
-    # @param args [Array] Optional positional arguments to pass to the predicate method
-    # @param kwargs [Hash] Optional keyword arguments to pass to the predicate method
-    # @param block [Proc] Optional block to pass to the predicate method
-    #
-    # @raise [ArgumentError] if the predicate name format is invalid
-    #
-    # @return [Predicate] a new instance of the matcher
-    #
-    # @example With simple predicate
-    #   Predicate.new(:be_empty)                # Empty check
-    #
-    # @example With arguments
-    #   Predicate.new(:have_key, :id)           # Key presence check
-    #
-    # @example With keyword arguments
-    #   Predicate.new(:be_valid, status: true)  # Conditional validation
+module Matchi
+  # Predicate matcher: passes when a predicate method of the actual value
+  # returns `true`. The matcher name `be_xxx` calls `xxx?`, and `have_xxx`
+  # calls `has_xxx?`, with `Kernel#public_send` bound to the actual value.
+  # The predicate must return `true` or `false`; any other value is an error,
+  # not a truthy pass.
+  #
+  # Since the actual value answers the call, this matcher depends on the
+  # honesty of the object under test. Use it for the object's own documented
+  # predicates.
+  #
+  # @example
+  #   Matchi::Predicate.new(:be_empty).match? { [] }           # => true
+  #   Matchi::Predicate.new(:have_key, :a).match? { { a: 1 } } # => true
+  class Predicate
+    # A matcher name: `be_` or `have_`, then a letter, then letters, digits
+    # or underscores, in any script. It never ends with `?` or `!`.
+    NAME = /\A(be|have)_\p{Alpha}[\p{Alnum}_]*\z/
+
+    # @param name [Symbol, String] `be_xxx` or `have_xxx`
+    # @param args [Array] positional arguments for the predicate
+    # @param kwargs [Hash] keyword arguments for the predicate
+    # @param block [Proc, nil] a block for the predicate
+    # @raise [ArgumentError] when the name does not start with be_ or have_
     def initialize(name, *args, **kwargs, &block)
       @name = String(name)
-      raise ::ArgumentError, "invalid predicate name format" unless valid_name?
+      raise ::ArgumentError, "name must match #{NAME.inspect} (got: #{name.inspect})" unless NAME.match?(@name)
 
+      @method_name = method_name
       @args = args
       @kwargs = kwargs
       @block = block
     end
 
-    # Checks if the yielded object responds to and returns true for the predicate.
-    #
-    # This method converts the predicate name into a method name according to the prefix
-    # mapping and calls it on the yielded object with any provided arguments. The method
-    # must return a boolean value, or a TypeError will be raised.
-    #
-    # @api public
-    #
-    # @yield [] Block that returns the object to check
-    # @yieldreturn [Object] The object to call the predicate method on
-    #
-    # @return [Boolean] true if the predicate method returns true
-    #
-    # @raise [ArgumentError] if no block is provided
-    # @raise [TypeError] if predicate method returns non-boolean value
-    #
-    # @example Basic usage
-    #   matcher = Predicate.new(:be_empty)
-    #   matcher.match? { [] }                # => true
-    #   matcher.match? { [1] }               # => false
-    #
-    # @example With arguments
-    #   matcher = Predicate.new(:have_key, :id)
-    #   matcher.match? { { id: 1 } }         # => true
+    # @yieldreturn [Object] the actual value
+    # @return [Boolean]
+    # @raise [ArgumentError] when no block is given
+    # @raise [TypeError] when the predicate returns something other than true or false
+    # @raise [NoMethodError] when the actual value has no such public predicate
     def match?
       raise ::ArgumentError, "a block must be provided" unless block_given?
 
-      value = yield.send(method_name, *@args, **@kwargs, &@block)
-      return value if [false, true].include?(value)
+      result = ::Kernel.instance_method(:public_send).bind_call(yield, @method_name, *@args, **@kwargs, &@block)
+      return result if true.equal?(result) || false.equal?(result)
 
-      raise ::TypeError, "Boolean expected, but #{value.class} instance returned."
+      raise ::TypeError, "#{@method_name} must return true or false (got a #{Constant.label(result_class(result))})"
     end
 
-    # Returns a human-readable description of the matcher.
-    #
-    # @api public
-    #
-    # @return [String] A string describing what this matcher verifies
-    #
-    # @example Simple predicate
-    #   Predicate.new(:be_empty).to_s                # => "be empty"
-    #
-    # @example With arguments
-    #   Predicate.new(:have_key, :id).to_s           # => "have key :id"
-    #
-    # @example With keyword arguments
-    #   Predicate.new(:be_valid, active: true).to_s  # => "be valid active: true"
+    # @return [String]
     def to_s
-      (
-        "#{@name.tr("_", " ")} " + [
-          @args.map(&:inspect).join(", "),
-          @kwargs.map { |k, v| "#{k}: #{v.inspect}" }.join(", "),
-          (@block.nil? ? "" : "&block")
-        ].reject { |i| i.eql?("") }.join(", ")
-      ).strip
+      arguments = @args.map(&:inspect) + @kwargs.map { |key, value| "#{key}: #{value.inspect}" }
+      arguments << "&block" if @block
+
+      [@name.tr("_", " "), arguments.join(", ")].reject(&:empty?).join(" ")
     end
 
     private
 
-    # Converts the predicate name into the actual method name to call.
-    #
-    # @api private
-    #
-    # @return [Symbol] The method name to call on the object
-    # @raise [ArgumentError] if the predicate prefix is unknown
-    #
-    # @example
-    #   # With be_ prefix
-    #   method_name                   # => :empty? (from be_empty)
-    #   # With have_ prefix
-    #   method_name                   # => :has_key? (from have_key)
     def method_name
-      _, transform = PREFIXES.find { |prefix, _| @name.start_with?(prefix) }
-      return transform.call(@name) if transform
+      return "#{@name.delete_prefix("be_")}?" if @name.start_with?("be_")
 
-      raise ::ArgumentError, "unknown prefix in predicate name: #{@name}"
+      "has_#{@name.delete_prefix("have_")}?"
     end
 
-    # Verifies that the predicate name follows the required format.
-    #
-    # @api private
-    #
-    # @return [Boolean] true if the name follows the required format
-    def valid_name?
-      return false if @name.match?(/[?!]\z/)
-
-      PREFIXES.keys.any? { |prefix| @name.start_with?(prefix) }
+    def result_class(result)
+      ::Kernel.instance_method(:class).bind_call(result)
     end
   end
 end

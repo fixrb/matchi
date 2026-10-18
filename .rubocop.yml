@@ -1,10 +1,8 @@
-inherit_from: .rubocop_todo.yml
-
+# The target Ruby version is read from `required_ruby_version` in the gemspec.
 AllCops:
   NewCops: enable
-  TargetRubyVersion: 3.1
 
-require:
+plugins:
   - rubocop-md
   - rubocop-performance
   - rubocop-rake
@@ -15,9 +13,19 @@ Layout/HashAlignment:
   EnforcedHashRocketStyle: table
   EnforcedColonStyle: table
 
-# Check with yard instead.
+# Every class, module and public method of the library carries a comment;
+# YARD (`--fail-on-warning` in .yardopts) checks that its tags match the code.
+# Enabled explicitly: the next major release of RuboCop is expected to
+# disable `Style/Documentation` by default.
 Style/Documentation:
-  Enabled: false
+  Enabled: true
+  Include:
+    - lib/**/*.rb
+
+Style/DocumentationMethod:
+  Enabled: true
+  Include:
+    - lib/**/*.rb
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes
@@ -25,9 +33,34 @@ Style/StringLiterals:
 Style/StringLiteralsInInterpolation:
   EnforcedStyle: double_quotes
 
-# We do not need to support Ruby 1.9, so this is good to use.
-Style/SymbolArray:
-  Enabled: true
+# `Module === object` is how the expected side receives a type comparison:
+# the object under test cannot redefine it. It is the idiom of this gem.
+Style/CaseEquality:
+  Enabled: false
 
+# `answer ? true : false` is how an answer that may come from the object
+# under test becomes a boolean: the truthiness test calls no method on it,
+# where `!!answer` would call `answer.!`. RuboCop assumes that `eql?` returns
+# a boolean; the `eql?` of an expected value may not.
+Style/IfWithBooleanLiteralBranches:
+  AllowedMethods:
+    - eql?
+    - infinite?
+    - nonzero?
+
+Style/RedundantCondition:
+  AllowedMethods:
+    - eql?
+    - infinite?
+    - nonzero?
+
+# The arguments of an observed method are named, documented, and captured by
+# a lambda; `...` would hide them.
 Style/ArgumentsForwarding:
   Enabled: false
+
+# The tests are single-threaded scripts, and their singleton methods
+# (`def holder.items`) belong to plain objects, not to classes.
+ThreadSafety:
+  Exclude:
+    - test/**/*

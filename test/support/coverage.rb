@@ -3,6 +3,8 @@
 require "simplecov"
 
 SimpleCov.start do
-  # Add filter to ignore the test directory
-  add_filter "/test/"
+  # Leave the test directory out of the report.
+  skip "/test/"
+  enable_coverage :branch
+  minimum_coverage line: 100, branch: 100
 end
