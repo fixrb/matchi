@@ -13,10 +13,11 @@ Gem::Specification.new do |spec|
 
   spec.homepage               = "https://fixrb.dev/gems/matchi/"
   spec.license                = "MIT"
-  spec.files                  = Dir["LICENSE.md", "README.md", "lib/**/*.rb"]
+  spec.files                  = Dir["LICENSE.md", "README.md", "lib/**/*.rb", base: __dir__]
   spec.required_ruby_version  = ">= 3.3.0"
 
   spec.metadata["bug_tracker_uri"]       = "https://github.com/fixrb/matchi/issues"
+  spec.metadata["changelog_uri"]         = "https://github.com/fixrb/matchi#changes-in-60"
   spec.metadata["documentation_uri"]     = "https://rubydoc.info/gems/matchi"
   spec.metadata["rubygems_mfa_required"] = "true"
   spec.metadata["source_code_uri"]       = "https://github.com/fixrb/matchi"

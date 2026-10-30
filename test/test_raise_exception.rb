@@ -13,17 +13,59 @@ raise unless matcher.to_s == "raise exception ZeroDivisionError"
 # Descendants pass.
 raise unless Matchi::RaiseException.new(StandardError).match? { 1 / 0 }
 
+# The exceptions a block raises on its own, a StandardError, a ScriptError,
+# a SystemStackError or a SystemExit, are caught and judged whatever the
+# expected class.
+recurse = nil
+recurse = -> { recurse.call }
 begin
-  raise "SystemExit not caught" unless Matchi::RaiseException.new(Exception).match? { raise SystemExit }
+  raise unless Matchi::RaiseException.new(SystemExit).match? { exit 3 }
+  raise unless Matchi::RaiseException.new(Exception).match? { exit 3 }
+  raise if matcher.match? { exit 3 }
 rescue SystemExit
   raise "SystemExit escaped the matcher"
 end
-raise unless Matchi::RaiseException.new(Interrupt).match? { raise Interrupt }
+raise unless Matchi::RaiseException.new(NotImplementedError).match? { raise NotImplementedError }
+raise if matcher.match? { raise NotImplementedError }
+raise unless Matchi::RaiseException.new(SystemStackError).match? { recurse.call }
+raise if matcher.match? { recurse.call }
+
+# Any other exception goes through, unless it is the one expected; the
+# message still has to match.
+[Interrupt, NoMemoryError, SecurityError].each do |klass|
+  begin
+    matcher.match? { raise klass }
+    raise "expected #{klass} to go through"
+  rescue klass
+    nil
+  end
+  raise unless Matchi::RaiseException.new(klass).match? { raise klass }
+  raise unless Matchi::RaiseException.new(Exception).match? { raise klass }
+  raise unless false.equal?(Matchi::RaiseException.new(klass, "nope").match? { raise klass, "yes" })
+end
+begin
+  matcher.match? { raise SignalException, "TERM" }
+  raise "expected the signal to go through"
+rescue SignalException
+  nil
+end
+# An enclosing Timeout ends the block with its own exception, which goes
+# through; a Timeout given a StandardError to raise, or one inside the
+# block, raises what the matcher judges.
+require "timeout"
+begin
+  Timeout.timeout(0.05) { matcher.match? { sleep } }
+  raise "expected the timeout to go through"
+rescue Timeout::Error
+  nil
+end
+raise if Timeout.timeout(0.05, RuntimeError) { matcher.match? { sleep } }
+raise unless Matchi::RaiseException.new(Timeout::Error).match? { Timeout.timeout(0.05) { sleep } }
 
 # With an expected message: exact String, or Regexp.
 raise unless Matchi::RaiseException.new(ZeroDivisionError, "divided by 0").match? { 1 / 0 }
 raise unless Matchi::RaiseException.new(ZeroDivisionError, /by 0/).match? { 1 / 0 }
-raise if Matchi::RaiseException.new(ZeroDivisionError, "divided by").match? { 1 / 0 }
+raise unless false.equal?(Matchi::RaiseException.new(ZeroDivisionError, "divided by").match? { 1 / 0 })
 raise if Matchi::RaiseException.new(ZeroDivisionError, /by 1/).match? { 1 / 0 }
 raise if Matchi::RaiseException.new(IOError, /by 0/).match? { 1 / 0 }
 
@@ -58,6 +100,17 @@ end
 raise if Matchi::RaiseException.new(StandardError, "42").match? { raise MatchiTestOddMessageError }
 raise unless Matchi::RaiseException.new(StandardError).match? { raise MatchiTestOddMessageError }
 
+# What the message filter raises propagates: it is not the block's exception.
+class MatchiTestBrokenMessageError < StandardError
+  def message = raise(IOError, "broken message")
+end
+begin
+  Matchi::RaiseException.new(StandardError, "x").match? { raise MatchiTestBrokenMessageError }
+  raise "expected IOError"
+rescue IOError
+  nil
+end
+
 # With a name, resolved when the matcher runs.
 raise unless Matchi::RaiseException.new(:ZeroDivisionError).match? { 1 / 0 }
 raise unless Matchi::RaiseException.new("Errno::ENOENT").match? { File.read("/matchi/missing") }
@@ -73,6 +126,27 @@ class MatchiTestLiarError < StandardError
   def self.<(_other) = true
 end
 raise if Matchi::RaiseException.new(ZeroDivisionError).match? { raise MatchiTestLiarError }
+
+# Nor can the message: the expected String or Regexp receives the
+# comparison, on a plain copy of the message.
+class MatchiTestLiarMessage < String
+  def eql?(_other) = true
+  def ==(_other) = true
+  def match?(*) = true
+  def valid_encoding? = true
+end
+
+class MatchiTestLiarMessageError < StandardError
+  def message = MatchiTestLiarMessage.new("liar")
+end
+
+class MatchiTestInvalidLiarMessageError < StandardError
+  def message = MatchiTestLiarMessage.new("a\xff")
+end
+raise if Matchi::RaiseException.new(StandardError, "x").match? { raise MatchiTestLiarMessageError }
+raise if Matchi::RaiseException.new(StandardError, /x/).match? { raise MatchiTestLiarMessageError }
+raise if Matchi::RaiseException.new(StandardError, /a/).match? { raise MatchiTestInvalidLiarMessageError }
+raise unless Matchi::RaiseException.new(StandardError, /liar/).match? { raise MatchiTestLiarMessageError }
 
 # A name resolving to no constant is a NameError when the matcher runs.
 begin

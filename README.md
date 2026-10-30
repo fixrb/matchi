@@ -91,9 +91,9 @@ Matchi::Change.new(list, :length).from(1).to(2).match? { list << 1 } # => true
 
 `BeWithin.new(delta)` and `Change#from(value)` are builders, not matchers: they do not respond to `match?` until `of` or `to` completes them.
 
-Arguments are validated when the matcher is built (`ArgumentError`); a name is resolved when the matcher runs (`NameError`, or `TypeError` when the constant is not a module). A block is always required by `match?`. Whatever the actual value or an observed method raises propagates; `RaiseException` catches what its block raises, not what its message filter or the resolution of its name raises.
+Arguments are validated when the matcher is built (`ArgumentError`); a name is resolved when the matcher runs (`NameError`, or `TypeError` when the constant is not a module, or not an exception class for `RaiseException`). A block is always required by `match?`. Whatever the actual value or an observed method raises propagates; `RaiseException` rescues what its block raises, within the limits below, not what its message filter or the resolution of its name raises.
 
-`RaiseException` catches every `Exception`, including `SystemExit` and `Interrupt`, so that a specification can assert on them; an unexpected `exit` inside the block is a failure, not the end of the process.
+`RaiseException` rescues an exception of the expected class, and any `StandardError`, `ScriptError`, `SystemStackError` or `SystemExit` (the exceptions [Defi](https://fixrb.dev/gems/defi/) keeps too), which it then compares with the expected class. Anything else, an `Interrupt`, a signal, a `NoMemoryError`, the exception with which an enclosing `Timeout` ends its block, goes through as it would with any other matcher, unless that is the class expected: `RaiseException.new(Interrupt)` rescues an `Interrupt`. An unexpected `exit` inside the block is the wrong exception, so `false`, not the end of the process.
 
 `Change` observes a value: when the observed method returns the same unfrozen object twice (an `attr_reader` on a mutated array, say), `match?` raises instead of reporting no change. Observe `items.length`, or use `to`.
 
@@ -130,10 +130,15 @@ If you come from RSpec or Minitest, these will surprise you:
 
 - `Eq` is RSpec's `eql`, not its `eq`: it compares with `eql?`, so `1` is not `1.0`, and a value object that only defines `==` never matches. Define `eql?` and `hash` on it, or use `Satisfy`. `Integer#==` hands the comparison to the other operand, which is why Matchi does not use it.
 - `Match` takes a `Regexp` only. For a literal substring, `Matchi::Match.new(Regexp.new(Regexp.escape("a.b")))`.
-- `RaiseException` is `raise_error`; it needs an exception class, or its name, and takes an optional message.
+- `RaiseException` is `raise_error`; it needs an exception class, or its name, and takes an optional message. It does not rescue an `Interrupt`, a signal, a `NoMemoryError` or the exception with which an enclosing `Timeout` ends its block, unless that is the class expected, where `raise_error` rescues every `Exception`.
 - `Change#to` demands a change: a value already equal to the target does not pass. `Change` without a refinement needs the observed method to return a value, not the mutated object.
 - `Predicate` only calls a method of the actual value: `be_nil` calls `nil?`, but `be_truthy`, `be_falsey` and `be_a` are not predicates and do not exist. Use `Be.new(nil)`, `Satisfy`, `BeAKindOf`.
 - There is no `and`, `or`, `not_to` or `all`: compose in your framework, with plain booleans.
+
+## Changes in 6.0
+
+- `RaiseException` no longer rescues every `Exception`: it rescues the expected class, and any `StandardError`, `ScriptError`, `SystemStackError` or `SystemExit`, which it compares with the expected class. An `Interrupt`, a signal, a `NoMemoryError` or the exception with which an enclosing `Timeout` ends its block goes through unless that is the class expected, where 5.0 reported it as a failed match. `RaiseException.new(Exception)` still rescues everything, as asked.
+- The message filter of `RaiseException` and `Match` compare a plain copy of the actual `String`: a subclass could answer `valid_encoding?` for it and turn the comparison into an error.
 
 ## Changes in 5.0
 

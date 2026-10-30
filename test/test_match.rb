@@ -21,6 +21,16 @@ raise if Matchi::Match.new(/é/).match? { "\xC3\xA9".b }
 raise if matcher.match? { "foo".encode("UTF-16LE") }
 raise unless Matchi::Match.new(/é/).match? { "é" }
 
+# A subclass of String has no say: the comparison reads a plain copy.
+class MatchiTestLiarString < String
+  def valid_encoding? = true
+  def match?(*) = true
+  def to_s = "foo"
+end
+raise if matcher.match? { MatchiTestLiarString.new("bar") }
+raise if matcher.match? { MatchiTestLiarString.new("foo\xff") }
+raise unless matcher.match? { MatchiTestLiarString.new("foobar") }
+
 # An object pretending to be a string is not matched.
 pretender = Object.new
 def pretender.to_str = "foobar"

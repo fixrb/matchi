@@ -9,11 +9,13 @@ module Matchi
   # message: a String the message must be `eql?` to, or a Regexp it must
   # match.
   #
-  # Every `Exception` is caught, including `SystemExit` and `Interrupt`: a
-  # specification must be able to assert on any of them, so an unexpected
-  # `exit` or Ctrl-C inside the block is reported as a failure, not
-  # propagated. The expected class can be given directly, or by name; see
-  # {Matchi::Constant}.
+  # The matcher rescues an exception of the expected class, and any
+  # `StandardError`, `ScriptError`, `SystemStackError` or `SystemExit`,
+  # which it then compares with the expected class. Anything else, an
+  # `Interrupt`, a signal, a `NoMemoryError`, the exception with which an
+  # enclosing `Timeout` ends its block, goes through as it would with any
+  # other matcher, unless that is the class expected. The expected class can
+  # be given directly, or by name; see {Matchi::Constant}.
   #
   # @example
   #   Matchi::RaiseException.new(ZeroDivisionError).match? { 1 / 0 }              # => true
@@ -45,11 +47,15 @@ module Matchi
       # mistaken for an exception raised by the block.
       klass = expected_class
 
+      # The expected class first, whatever it is; then what a block raises
+      # on its own, the exceptions Defi keeps too.
       begin
         yield
         false
-      rescue ::Exception => e # rubocop:disable Lint/RescueException
-        klass === e && message?(e)
+      rescue klass => e
+        message?(e)
+      rescue ::StandardError, ::ScriptError, ::SystemStackError, ::SystemExit
+        false
       end
     end
 
@@ -85,13 +91,17 @@ module Matchi
     end
 
     # The message is whatever the exception answers to `message`, which is
-    # its own data, as with any exception; it must be a valid String. The
-    # expected String or Regexp receives the comparison.
+    # its own data, as with any exception; it must be a String, copied so
+    # that a subclass has no say, and valid. The expected String or Regexp
+    # receives the comparison.
     def message?(exception)
       return true if @message.nil?
 
       message = exception.message
-      return false unless ::String === message && message.valid_encoding?
+      return false unless ::String === message
+
+      message = ::String.new(message)
+      return false unless message.valid_encoding?
 
       ::String === @message ? @message.eql?(message) : @message.match?(message)
     rescue ::Encoding::CompatibilityError

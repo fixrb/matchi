@@ -31,7 +31,8 @@ module Matchi
       actual = yield
       return false unless ::String === actual || ::Symbol === actual
 
-      string = ::Symbol === actual ? actual.name : actual
+      # A plain copy: a subclass of String has no say in the comparison.
+      string = ::String.new(::Symbol === actual ? actual.name : actual)
       return false unless string.valid_encoding?
 
       begin
