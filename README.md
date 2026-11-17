@@ -1,7 +1,7 @@
 # Matchi
 
 [![Version](https://img.shields.io/github/v/tag/fixrb/matchi?label=Version&logo=github)](https://github.com/fixrb/matchi/tags)
-[![Yard documentation](https://img.shields.io/badge/Yard-documentation-blue.svg?logo=github)](https://rubydoc.info/github/fixrb/matchi/main)
+[![Yard documentation](https://img.shields.io/badge/Yard-documentation-blue.svg?logo=github)](https://gemdocs.org/gems/matchi/latest/)
 [![License](https://img.shields.io/github/license/fixrb/matchi?label=License&logo=github)](https://github.com/fixrb/matchi/raw/main/LICENSE.md)
 
 Framework-agnostic matchers for Ruby. Small, explicit, and written so that the object under test cannot forge a match.
